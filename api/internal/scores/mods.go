@@ -12,7 +12,7 @@ var Modes = map[string]int{
 }
 
 func ValidGamemode(m string) bool {
-	for k, _ := range Modes {
+	for k := range Modes {
 		if k == m {
 			return true
 		}

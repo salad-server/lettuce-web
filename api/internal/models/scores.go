@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"mini-api/internal/scores"
 	"time"
 )
 
@@ -76,10 +77,11 @@ type AdvancedScore struct {
 
 // TODO: Disable results for restricted/banned users
 // TODO: Treat restricted users as banned
-// TODO: Support for rx & ap in GetScores/ScoreInfo
+// TODO: Proper CORS config
 
-func (db *DB) GetScores(best bool, uid, mode, page int) ([]Score, error) {
-	sort := "id"
+func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) {
+	m := scores.Modes[mode]
+	sort := "s.id"
 	ranked := ""
 
 	if best {
@@ -101,7 +103,7 @@ func (db *DB) GetScores(best bool, uid, mode, page int) ([]Score, error) {
 
 	var scores []Score
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	row, err := db.Database.QueryContext(c, q, uid, mode, page*PAGE_LEN)
+	row, err := db.Database.QueryContext(c, q, uid, m, page*PAGE_LEN)
 
 	defer cancel()
 
