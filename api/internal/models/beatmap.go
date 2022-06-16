@@ -134,3 +134,66 @@ func (db *DB) BeatmapSets(bid int) ([]Beatmap, error) {
 
 	return bmaps, nil
 }
+
+func (db *DB) BeatmapLeaderboard(bid, page int, mode string) ([]Score, error) {
+	m := scores.Modes[mode]
+	q := `
+		SELECT
+			s.id, s.map_md5, s.score, s.pp, s.acc, s.max_combo, s.mods,
+			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
+			s.status, s.play_time, s.perfect, m.title, m.version,
+			m.set_id, m.id, m.status
+		FROM scores s
+		INNER JOIN maps m ON s.map_md5 = m.md5
+		WHERE m.id = ? AND s.mode = ? AND s.status = 2
+		ORDER BY pp DESC LIMIT ?, 10
+	`
+
+	var bmap_scores []Score
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	row, err := db.Database.QueryContext(c, q, bid, m, page*PAGE_LEN)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in BeatmapLeaderboard")
+		return nil, err
+	}
+
+	for row.Next() {
+		var score Score
+
+		if err := row.Scan(
+			&score.ID,
+			&score.Map.MD5,
+			&score.Score,
+			&score.PP,
+			&score.Acc,
+			&score.MaxCombo,
+			&score.Mods,
+			&score.Count300,
+			&score.Count100,
+			&score.Count50,
+			&score.Miss,
+			&score.Geki,
+			&score.Katu,
+			&score.Grade,
+			&score.Status,
+			&score.Date,
+			&score.Perfect,
+			&score.Map.Title,
+			&score.Map.Version,
+			&score.Map.SetID,
+			&score.Map.MapID,
+			&score.Map.MapStatus,
+		); err != nil {
+			log.Println("Error in BeatmapLeaderboard")
+			return nil, err
+		}
+
+		score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
+		bmap_scores = append(bmap_scores, score)
+	}
+
+	return bmap_scores, nil
+}

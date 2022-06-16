@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"mini-api/internal/scores"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -22,7 +22,7 @@ func (app *application) Scores(w http.ResponseWriter, r *http.Request) {
 	mode := r.FormValue("m")
 
 	badParams := (ierr != nil || berr != nil || perr != nil)
-	badArgs := (uid < -1 || best < 0 || best > 1 || page < -1)
+	badArgs := (uid <= -1 || best < 0 || best > 1 || page <= -1)
 
 	if badParams || badArgs || !scores.ValidGamemode(mode) {
 		app.BadRequest(w)
@@ -30,24 +30,15 @@ func (app *application) Scores(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := app.DB.GetScores(best != 0, uid, page, mode)
-	scores, jerr := json.Marshal(res)
 
-	if err != nil || jerr != nil {
-		app.err.Println(err, jerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 
 		return
 	}
 
-	if len(res) <= 0 {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte("[]"))
-
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(scores)
+	app.JSON(w, res)
 }
 
 func (app *application) Score(w http.ResponseWriter, r *http.Request) {
@@ -60,17 +51,15 @@ func (app *application) Score(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := app.DB.ScoreInfo(sid)
-	scores, jerr := json.Marshal(res)
 
-	if err != nil || jerr != nil {
-		app.err.Println(err, jerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(scores)
+	app.JSON(w, res)
 }
 
 func (app *application) Stats(w http.ResponseWriter, r *http.Request) {
@@ -84,17 +73,15 @@ func (app *application) Stats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := app.DB.UserStats(uid, mode)
-	stats, jerr := json.Marshal(res)
 
-	if err != nil || jerr != nil {
-		app.err.Println(err, jerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(stats)
+	app.JSON(w, res)
 }
 
 func (app *application) Info(w http.ResponseWriter, r *http.Request) {
@@ -107,17 +94,15 @@ func (app *application) Info(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := app.DB.UserInfo(uid)
-	info, jerr := json.Marshal(res)
 
-	if err != nil || jerr != nil {
-		app.err.Println(err, jerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(info)
+	app.JSON(w, res)
 }
 
 func (app *application) Beatmap(w http.ResponseWriter, r *http.Request) {
@@ -130,17 +115,15 @@ func (app *application) Beatmap(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := app.DB.BeatmapInfo(bid)
-	info, jerr := json.Marshal(res)
 
-	if err != nil || jerr != nil {
-		app.err.Println(err, jerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(info)
+	app.JSON(w, res)
 }
 
 func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
@@ -153,43 +136,51 @@ func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := app.DB.BeatmapSets(bid)
-	info, jerr := json.Marshal(res)
 
-	if err != nil || jerr != nil {
-		app.err.Println(err, jerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 
 		return
 	}
 
-	if len(res) <= 0 {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte("[]"))
-
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(info)
+	app.JSON(w, res)
 }
 
 func (app *application) Records(w http.ResponseWriter, r *http.Request) {
 	res, err := app.DB.Records()
-	records, rerr := json.Marshal(res)
 
-	if err != nil || rerr != nil {
-		app.err.Println(err, rerr)
+	if err != nil {
+		app.err.Println(err)
 		app.InternalError(w)
 		return
 	}
 
-	if len(records) <= 0 {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte("[]"))
+	app.JSON(w, res)
+}
+
+func (app *application) BeatmapLeaderboard(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	bid, berr := strconv.Atoi(id)
+	page, perr := strconv.Atoi(r.FormValue("p"))
+	mode := r.FormValue("m")
+
+	badParams := berr != nil || perr != nil || !scores.ValidGamemode(mode)
+	badArgs := (bid <= -1 || page <= -1)
+
+	if badParams || badArgs {
+		app.BadRequest(w)
+		return
+	}
+
+	res, err := app.DB.BeatmapLeaderboard(bid, page, mode)
+
+	if err != nil {
+		app.err.Println(err)
+		app.InternalError(w)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(records)
+	app.JSON(w, res)
 }

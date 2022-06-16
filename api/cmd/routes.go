@@ -25,7 +25,7 @@ func (app *application) routes() http.Handler {
 	// beatmap
 	mux.Get("/beatmap/{id}", app.Beatmap)
 	mux.Get("/beatmap/{id}/sets", app.BeatmapSets)
-	// mux.Get("/beatmap/{id}/leaderboard", app.BeatmapLeaderboard)
+	mux.Get("/beatmap/{id}/leaderboard", app.BeatmapLeaderboard)
 
 	return mux
 }
