@@ -12,7 +12,14 @@ func (app *application) routes() http.Handler {
 	mux.Use(cors.Handler(app.cors))
 
 	mux.Get("/", app.Index)
-	mux.Get("/users/scores", app.Scores)
 
+	// users
+	mux.Get("/users/{id}", app.Info)
+	mux.Get("/users/{id}/scores", app.Scores)
+	mux.Get("/users/{id}/stats", app.Stats)
+	
+	// scores
+	mux.Get("/score/{id}", app.Score)
+	
 	return mux
 }
