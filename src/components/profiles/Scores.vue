@@ -1,6 +1,6 @@
 <template>
     <div v-if="data">
-        <table>
+        <table v-if="scoresExist">
             <ScoreItem
                 v-for="score in data"
                 :key="score.id"
@@ -8,8 +8,9 @@
                 :mode="mode"
             />
         </table>
+        <h3 v-else>No scores yet!</h3>
 
-        <button @click="this.$emit('clicked')">Load</button>
+        <button @click="$emit('clicked')">Load</button>
     </div>
 </template>
 
@@ -20,5 +21,10 @@ import ScoreItem from "./ScoreItem.vue";
 export default defineComponent({
     props: ["data", "mode"],
     components: { ScoreItem },
+    computed: {
+        scoresExist() {
+            return !!this.data.length;
+        },
+    },
 });
 </script>

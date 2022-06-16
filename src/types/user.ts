@@ -28,4 +28,6 @@ export interface Info {
     badge_name: string;
     badge_icon: string;
     bio: string;
+
+    code?: number;
 }

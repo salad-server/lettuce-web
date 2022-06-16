@@ -8,17 +8,19 @@
                 <b>{{ score.map.title }} [{{ score.map.version }}]</b>
             </router-link>
             <div>
-                {{ comma(score.c300) }} / {{ comma(score.c100) }} /
-                {{ comma(score.c50) }} / {{ comma(score.miss) }} |
-                {{ comma(score.combo) }}x
+                <b>{{ comma(score.score) }} | </b>
+                <span>
+                    {{ comma(score.c300) }} / {{ comma(score.c100) }} /
+                    {{ comma(score.c50) }} / {{ comma(score.miss) }} |
+                    {{ comma(score.combo) }}x
+                </span>
             </div>
             <div>
-                <b>{{ comma(score.score) }}</b>
+                <span v-if="showMap">{{ score.map.status }}</span>
+                <span v-if="showMap && showStatus"> / </span>
+                <span v-if="showStatus">Unsubmitted</span>
             </div>
-            <div v-if="score.map.status != 'Ranked'">
-                <span>{{ score.map.status }}</span>
-            </div>
-            <div>
+            <div :title="score.play_date">
                 {{ time(score.play_date) }}
             </div>
         </td>
@@ -27,13 +29,11 @@
         </td>
         <td>
             <h3>{{ score.pp.toFixed(2) }}pp</h3>
-
             <router-link
                 v-if="score.submission_status"
                 :to="`/score/${score.id}`"
                 >More Info</router-link
             >
-            <div v-if="score.submission_status != 2">Unsubmitted</div>
         </td>
     </tr>
 </template>
@@ -62,6 +62,14 @@ export default defineComponent({
 
             // prettier-ignore
             return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("");
+        },
+
+        showStatus() {
+            return this.score.submission_status != 2;
+        },
+
+        showMap() {
+            return this.score.map.status != "Ranked";
         },
     },
 });

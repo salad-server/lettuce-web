@@ -41,6 +41,8 @@ type Score struct {
 
 type AdvancedScore struct {
 	ID       int     `json:"id"`
+	UID      int     `json:"uid"`
+	Username string  `json:"username"`
 	Score    int     `json:"score"`
 	PP       float32 `json:"pp"`
 	Acc      float32 `json:"acc"`
@@ -56,6 +58,7 @@ type AdvancedScore struct {
 	Status   int     `json:"submission_status"`
 	Date     string  `json:"play_date"`
 	Perfect  bool    `json:"perfect_score"`
+	Mode     int     `json:"play_mode"`
 	Map      struct {
 		Title       string  `json:"title"`
 		Version     string  `json:"version"`
@@ -65,7 +68,7 @@ type AdvancedScore struct {
 		Creator     string  `json:"creator"`
 		LastUpdate  string  `json:"update"`
 		TotalLength int     `json:"len"`
-		BPM         int     `json:"bpm"`
+		BPM         float32 `json:"bpm"`
 		CS          float32 `json:"cs"`
 		AR          float32 `json:"ar"`
 		OD          float32 `json:"od"`
@@ -161,13 +164,15 @@ func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) 
 func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 	q := `
 		SELECT
-			s.id, s.score, s.pp, s.acc, s.max_combo, s.mods,
+			s.id, s.userid, u.name, s.score, s.pp, s.acc, s.max_combo, s.mods,
 			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
-			s.status, s.play_time, s.perfect,
+			s.status, s.play_time, s.perfect, s.mode,
 			m.status, m.id as map_id, m.set_id, m.md5, m.artist, m.title, m.version,
 			m.creator, m.last_update, m.total_length, m.max_combo, m.bpm,
 			m.cs, m.ar, m.od, m.hp, m.diff
-		FROM scores s JOIN maps m ON s.map_md5 = m.md5
+		FROM scores s
+		JOIN maps m ON s.map_md5 = m.md5
+		JOIN users u ON s.userid = u.id
 		WHERE s.id = ?
 	`
 
@@ -178,6 +183,8 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 	defer cancel()
 	if err := res.Scan(
 		&score.ID,
+		&score.UID,
+		&score.Username,
 		&score.Score,
 		&score.PP,
 		&score.Acc,
@@ -193,6 +200,7 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 		&score.Status,
 		&score.Date,
 		&score.Perfect,
+		&score.Mode,
 		&score.Map.MapStatus,
 		&score.Map.MapID,
 		&score.Map.SetID,

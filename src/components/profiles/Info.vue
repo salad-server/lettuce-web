@@ -13,6 +13,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import config from "../../../config.json";
+import moment from "moment";
 
 export default defineComponent({
     props: ["info", "id"],
@@ -24,9 +25,7 @@ export default defineComponent({
 
     methods: {
         fixTime(t: number) {
-            const d = new Date(t);
-
-            return d;
+            return moment(new Date(t * 1000)).fromNow();
         },
     },
 });

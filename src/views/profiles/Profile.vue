@@ -43,7 +43,7 @@ import { Score } from "@/types/scores";
 import { Stats as UserStats, Info as UserInfo } from "@/types/user";
 
 import Loading from "@/components/global/Loading.vue";
-import Error from "@/components/profiles/Error.vue";
+import Error from "@/components/global/Error.vue";
 import Info from "@/components/profiles/Info.vue";
 import Scores from "@/components/profiles/Scores.vue";
 import Stats from "@/components/profiles/Stats.vue";
@@ -95,10 +95,6 @@ export default defineComponent({
         };
     },
 
-    // mux.Get("/users/{id}", app.Info)
-    // mux.Get("/users/{id}/scores", app.Scores)
-    // mux.Get("/users/{id}/stats", app.Stats)
-
     async mounted() {
         const mode = new URLSearchParams(window.location.search).get("m") || "";
         const mod = new URLSearchParams(window.location.search).get("g") || "";
@@ -127,7 +123,7 @@ export default defineComponent({
                 this.errorMsg = "Profile not found!";
             });
 
-            if (res.id == 0) {
+            if (res.id == 0 || [400, 500].includes(res?.code || 0)) {
                 this.error = true;
                 this.errorMsg = "Profile not found!";
                 return;

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Profile Error!!!</h1>
+        <h1>Request Error!</h1>
         <h2>{{ msg }}</h2>
     </div>
 </template>

@@ -19,6 +19,8 @@ export interface Score {
 }
 export interface AdvancedScore {
     id: number;
+    uid: number;
+    username: string;
     score: number;
     pp: number;
     acc: number;
@@ -34,7 +36,10 @@ export interface AdvancedScore {
     submission_status: number;
     play_date: string;
     perfect_score: boolean;
+    play_mode: number;
     map: AdvancedBeatmap;
+
+    code?: number;
 }
 export interface AdvancedBeatmap {
     title: string;
