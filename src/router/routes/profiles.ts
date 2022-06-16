@@ -9,8 +9,14 @@ export default [
         component: Profile,
     },
     {
-        path: "/profile/score/:id",
-        name: "Profile Score",
+        path: "/score/:id",
+        name: "Score Info",
+        props: true,
+        component: Score,
+    },
+    {
+        path: "/score/:id/download",
+        name: "Score Download",
         props: true,
         component: Score,
     },
