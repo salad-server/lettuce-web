@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"mini-api/internal/scores"
-	"strconv"
 	"time"
 )
 
@@ -80,9 +79,15 @@ type AdvancedScore struct {
 	} `json:"map"`
 }
 
+type Records struct {
+	Score AdvancedScore `json:"score"`
+	PP    AdvancedScore `json:"pp"`
+}
+
 // TODO: Disable results for restricted/banned users
 // TODO: Treat restricted users as banned
 // TODO: Proper CORS config
+// TODO: Cache record with redis. This query is brutal
 
 func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) {
 	m := scores.Modes[mode]
@@ -148,13 +153,7 @@ func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) 
 			return nil, err
 		}
 
-		status, serr := strconv.Atoi(score.Map.MapStatus)
-		if serr != nil {
-			log.Println("Could not convert map status in GetScores")
-			status = 0
-		}
-
-		score.Map.MapStatus = scores.MapStatus[status]
+		score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
 		all_scores = append(all_scores, score)
 	}
 
@@ -221,19 +220,121 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 	); err != nil {
 		if err != sql.ErrNoRows {
 			log.Println("Error in ScoreInfo")
+			return score, err
 		}
-
-		return score, err
 	}
 
-	status, serr := strconv.Atoi(score.Map.MapStatus)
-
-	if serr != nil {
-		log.Println("Could not convert map status in ScoreInfo")
-		status = 0
-	}
-
-	score.Map.MapStatus = scores.MapStatus[status]
+	score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
 	score.Mode = scores.ConvertMode(score.Mode)
 	return score, nil
+}
+
+func (db *DB) Records() (map[string]Records, error) {
+	tmpl := `
+		SELECT
+			s.id, s.userid, u.name, s.score, s.pp, s.acc, s.max_combo, s.mods,
+			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
+			s.status, s.play_time, s.perfect, s.mode,
+			m.status, m.id as map_id, m.set_id, m.md5, m.artist, m.title, m.version,
+			m.creator, m.last_update, m.total_length, m.max_combo, m.bpm,
+			m.cs, m.ar, m.od, m.hp, m.diff
+		FROM scores s
+		JOIN maps m ON s.map_md5 = m.md5
+		JOIN users u ON s.userid = u.id
+		WHERE s.mode = ?
+		ORDER BY %s DESC LIMIT 1
+	`
+
+	records := map[string]Records{
+		"vn!std":   {},
+		"vn!taiko": {},
+		"vn!catch": {},
+		"vn!mania": {},
+		"rx!std":   {},
+		"rx!taiko": {},
+		"rx!catch": {},
+		"ap!std":   {},
+	}
+
+	for k := range records {
+		var record_pp AdvancedScore
+		var record_score AdvancedScore
+		pp := fmt.Sprintf(tmpl, "s.pp")
+		score := fmt.Sprintf(tmpl, "s.score")
+
+		v := scores.Modes[k]
+
+		cpp, cancel_pp := context.WithTimeout(context.Background(), 3*time.Second)
+		cscore, cancel_score := context.WithTimeout(context.Background(), 3*time.Second)
+		res_pp := db.Database.QueryRowContext(cpp, pp, v)
+		res_score := db.Database.QueryRowContext(cscore, score, v)
+
+		defer cancel_pp()
+		defer cancel_score()
+
+		if err := res_pp.Scan(
+			&record_pp.ID, &record_pp.UID,
+			&record_pp.Username, &record_pp.Score,
+			&record_pp.PP, &record_pp.Acc,
+			&record_pp.MaxCombo, &record_pp.Mods,
+			&record_pp.Count300, &record_pp.Count100,
+			&record_pp.Count50, &record_pp.Miss, &record_pp.Geki,
+			&record_pp.Katu, &record_pp.Grade,
+			&record_pp.Status, &record_pp.Date,
+			&record_pp.Perfect, &record_pp.Mode,
+			&record_pp.Map.MapStatus, &record_pp.Map.MapID,
+			&record_pp.Map.SetID, &record_pp.Map.MD5,
+			&record_pp.Map.Artist, &record_pp.Map.Title,
+			&record_pp.Map.Version, &record_pp.Map.Creator,
+			&record_pp.Map.LastUpdate, &record_pp.Map.TotalLength,
+			&record_pp.Map.MaxCombo, &record_pp.Map.BPM,
+			&record_pp.Map.CS, &record_pp.Map.AR,
+			&record_pp.Map.OD, &record_pp.Map.HP,
+			&record_pp.Map.Diff,
+		); err != nil {
+			if err != sql.ErrNoRows {
+				log.Println("Error in Records")
+				return records, err
+			}
+		}
+
+		record_pp.Map.MapStatus = scores.ConvertStatus(record_pp.Map.MapStatus)
+		record_pp.Mode = scores.ConvertMode(record_pp.Mode)
+
+		if err := res_score.Scan(
+			&record_score.ID, &record_score.UID,
+			&record_score.Username, &record_score.Score,
+			&record_score.PP, &record_score.Acc,
+			&record_score.MaxCombo, &record_score.Mods,
+			&record_score.Count300, &record_score.Count100,
+			&record_score.Count50, &record_score.Miss, &record_score.Geki,
+			&record_score.Katu, &record_score.Grade,
+			&record_score.Status, &record_score.Date,
+			&record_score.Perfect, &record_score.Mode,
+			&record_score.Map.MapStatus, &record_score.Map.MapID,
+			&record_score.Map.SetID, &record_score.Map.MD5,
+			&record_score.Map.Artist, &record_score.Map.Title,
+			&record_score.Map.Version, &record_score.Map.Creator,
+			&record_score.Map.LastUpdate, &record_score.Map.TotalLength,
+			&record_score.Map.MaxCombo, &record_score.Map.BPM,
+			&record_score.Map.CS, &record_score.Map.AR,
+			&record_score.Map.OD, &record_score.Map.HP,
+			&record_score.Map.Diff,
+		); err != nil {
+			if err != sql.ErrNoRows {
+				log.Println("Error in Records")
+				return records, err
+			}
+		}
+
+		record_score.Map.MapStatus = scores.ConvertStatus(record_score.Map.MapStatus)
+		record_score.Mode = scores.ConvertMode(record_score.Mode)
+
+		records[k] = Records{
+			PP:    record_pp,
+			Score: record_score,
+		}
+	}
+
+	return records, nil
 }

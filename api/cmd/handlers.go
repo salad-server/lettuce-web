@@ -1,13 +1,11 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"mini-api/internal/scores"
-
 	"github.com/go-chi/chi/v5"
 )
 
@@ -64,7 +62,7 @@ func (app *application) Score(w http.ResponseWriter, r *http.Request) {
 	res, err := app.DB.ScoreInfo(sid)
 	scores, jerr := json.Marshal(res)
 
-	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+	if err != nil || jerr != nil {
 		app.err.Println(err, jerr)
 		app.InternalError(w)
 
@@ -88,7 +86,7 @@ func (app *application) Stats(w http.ResponseWriter, r *http.Request) {
 	res, err := app.DB.UserStats(uid, mode)
 	stats, jerr := json.Marshal(res)
 
-	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+	if err != nil || jerr != nil {
 		app.err.Println(err, jerr)
 		app.InternalError(w)
 
@@ -111,7 +109,7 @@ func (app *application) Info(w http.ResponseWriter, r *http.Request) {
 	res, err := app.DB.UserInfo(uid)
 	info, jerr := json.Marshal(res)
 
-	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+	if err != nil || jerr != nil {
 		app.err.Println(err, jerr)
 		app.InternalError(w)
 
@@ -134,7 +132,7 @@ func (app *application) Beatmap(w http.ResponseWriter, r *http.Request) {
 	res, err := app.DB.BeatmapInfo(bid)
 	info, jerr := json.Marshal(res)
 
-	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+	if err != nil || jerr != nil {
 		app.err.Println(err, jerr)
 		app.InternalError(w)
 
@@ -157,7 +155,7 @@ func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
 	res, err := app.DB.BeatmapSets(bid)
 	info, jerr := json.Marshal(res)
 
-	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+	if err != nil || jerr != nil {
 		app.err.Println(err, jerr)
 		app.InternalError(w)
 
@@ -173,4 +171,25 @@ func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(info)
+}
+
+func (app *application) Records(w http.ResponseWriter, r *http.Request) {
+	res, err := app.DB.Records()
+	records, rerr := json.Marshal(res)
+
+	if err != nil || rerr != nil {
+		app.err.Println(err, rerr)
+		app.InternalError(w)
+		return
+	}
+
+	if len(records) <= 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("[]"))
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(records)
 }

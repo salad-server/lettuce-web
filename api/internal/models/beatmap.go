@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"log"
 	"mini-api/internal/scores"
-	"strconv"
 	"time"
 )
 
@@ -70,18 +69,11 @@ func (db *DB) BeatmapInfo(sid int) (Beatmap, error) {
 	); err != nil {
 		if err != sql.ErrNoRows {
 			log.Println("Error in BeatmapInfo")
+			return bmap, err
 		}
-
-		return bmap, err
 	}
 
-	status, serr := strconv.Atoi(bmap.Status)
-	if serr != nil {
-		log.Println("Could not convert map status in BeatmapSets")
-		status = 0
-	}
-
-	bmap.Status = scores.MapStatus[status]
+	bmap.Status = scores.ConvertStatus(bmap.Status)
 	bmap.Mode = scores.ConvertMode(bmap.Mode)
 	return bmap, nil
 }
@@ -135,13 +127,7 @@ func (db *DB) BeatmapSets(bid int) ([]Beatmap, error) {
 			return nil, err
 		}
 
-		status, serr := strconv.Atoi(bmap.Status)
-		if serr != nil {
-			log.Println("Could not convert map status in BeatmapSets")
-			status = 0
-		}
-
-		bmap.Status = scores.MapStatus[status]
+		bmap.Status = scores.ConvertStatus(bmap.Status)
 		bmap.Mode = scores.ConvertMode(bmap.Mode)
 		bmaps = append(bmaps, bmap)
 	}
