@@ -20,6 +20,10 @@ func (app *application) routes() http.Handler {
 	
 	// scores
 	mux.Get("/score/{id}", app.Score)
+
+	// beatmap
+	mux.Get("/beatmap/{id}", app.Beatmap)
+	mux.Get("/beatmap/{id}/sets", app.BeatmapSets)
 	
 	return mux
 }

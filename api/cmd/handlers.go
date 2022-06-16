@@ -121,3 +121,56 @@ func (app *application) Info(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(info)
 }
+
+func (app *application) Beatmap(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	bid, serr := strconv.Atoi(id)
+
+	if serr != nil {
+		app.BadRequest(w)
+		return
+	}
+
+	res, err := app.DB.BeatmapInfo(bid)
+	info, jerr := json.Marshal(res)
+
+	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+		app.err.Println(err, jerr)
+		app.InternalError(w)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(info)
+}
+
+func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	bid, serr := strconv.Atoi(id)
+
+	if serr != nil {
+		app.BadRequest(w)
+		return
+	}
+
+	res, err := app.DB.BeatmapSets(bid)
+	info, jerr := json.Marshal(res)
+
+	if (err != nil && err != sql.ErrNoRows) || jerr != nil {
+		app.err.Println(err, jerr)
+		app.InternalError(w)
+
+		return
+	}
+
+	if len(res) <= 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("[]"))
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(info)
+}
