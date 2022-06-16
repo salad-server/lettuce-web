@@ -17,7 +17,6 @@ export interface Score {
     perfect_score: boolean;
     map: Beatmap;
 }
-
 export interface AdvancedScore {
     id: number;
     score: number;
@@ -37,7 +36,6 @@ export interface AdvancedScore {
     perfect_score: boolean;
     map: AdvancedBeatmap;
 }
-
 export interface AdvancedBeatmap {
     title: string;
     version: string;
@@ -64,4 +62,5 @@ export interface Beatmap {
     version: string;
     md5: string;
     set_id: number;
+    status: string;
 }

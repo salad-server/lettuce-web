@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"mini-api/internal/scores"
+	"strconv"
 	"time"
 )
 
@@ -29,11 +30,12 @@ type Score struct {
 	Date     string  `json:"play_date"`
 	Perfect  bool    `json:"perfect_score"`
 	Map      struct {
-		MapID   int    `json:"map_id"`
-		Title   string `json:"title"`
-		Version string `json:"version"`
-		MD5     string `json:"md5"`
-		SetID   int    `json:"set_id"`
+		MapID     int    `json:"map_id"`
+		Title     string `json:"title"`
+		Version   string `json:"version"`
+		MD5       string `json:"md5"`
+		SetID     int    `json:"set_id"`
+		MapStatus string `json:"status"`
 	} `json:"map"`
 }
 
@@ -64,12 +66,12 @@ type AdvancedScore struct {
 		LastUpdate  string  `json:"update"`
 		TotalLength int     `json:"len"`
 		BPM         int     `json:"bpm"`
-		CS          int     `json:"cs"`
-		AR          int     `json:"ar"`
-		OD          int     `json:"od"`
-		HP          int     `json:"hp"`
+		CS          float32 `json:"cs"`
+		AR          float32 `json:"ar"`
+		OD          float32 `json:"od"`
+		HP          float32 `json:"hp"`
 		Diff        float32 `json:"diff"`
-		MapStatus   int     `json:"status"`
+		MapStatus   string  `json:"status"`
 		MD5         string  `json:"md5"`
 		MaxCombo    int     `json:"max_combo"`
 	} `json:"map"`
@@ -94,14 +96,14 @@ func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) 
 			s.id, s.map_md5, s.score, s.pp, s.acc, s.max_combo, s.mods,
 			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
 			s.status, s.play_time, s.perfect, m.title, m.version,
-			m.set_id, m.id
+			m.set_id, m.id, m.status
 		FROM scores s
 		INNER JOIN maps m ON s.map_md5 = m.md5
 		WHERE s.userid = ? AND s.mode = ? %s
 		ORDER BY %s DESC LIMIT ?, 10
 	`, ranked, sort)
 
-	var scores []Score
+	var all_scores []Score
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	row, err := db.Database.QueryContext(c, q, uid, m, page*PAGE_LEN)
 
@@ -137,15 +139,23 @@ func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) 
 			&score.Map.Version,
 			&score.Map.SetID,
 			&score.Map.MapID,
+			&score.Map.MapStatus,
 		); err != nil {
 			log.Println("Error in GetScores")
 			return nil, err
 		}
 
-		scores = append(scores, score)
+		status, serr := strconv.Atoi(score.Map.MapStatus)
+		if serr != nil {
+			log.Println("Could not convert map status in GetScores")
+			status = 0
+		}
+
+		score.Map.MapStatus = scores.MapStatus[status]
+		all_scores = append(all_scores, score)
 	}
 
-	return scores, nil
+	return all_scores, nil
 }
 
 func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
@@ -208,5 +218,13 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 		return score, err
 	}
 
+	status, serr := strconv.Atoi(score.Map.MapStatus)
+
+	if serr != nil {
+		log.Println("Could not convert map status in ScoreInfo")
+		status = 0
+	}
+
+	score.Map.MapStatus = scores.MapStatus[status]
 	return score, nil
 }

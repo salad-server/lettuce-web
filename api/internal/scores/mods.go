@@ -11,6 +11,16 @@ var Modes = map[string]int{
 	"ap!std":   7,
 }
 
+var MapStatus = map[int]string{
+	-1: "NotSubmitted",
+	0:  "Pending",
+	1:  "UpdateAvailable",
+	2:  "Ranked",
+	3:  "Approved",
+	4:  "Qualified",
+	5:  "Loved",
+}
+
 func ValidGamemode(m string) bool {
 	for k := range Modes {
 		if k == m {

@@ -15,22 +15,32 @@
             <div>
                 <b>{{ comma(score.score) }}</b>
             </div>
+            <div v-if="score.map.status != 'Ranked'">
+                <span>{{ score.map.status }}</span>
+            </div>
+            <div>
+                {{ time(score.play_date) }}
+            </div>
         </td>
         <td>
             <div v-html="mods"></div>
         </td>
         <td>
             <h3>{{ score.pp.toFixed(2) }}pp</h3>
-            <router-link :to="`/score/${score.id}`">Info</router-link> |
-            <!-- prettier-ignore -->
-            <router-link :to="`/score/${score.id}/download`">Download</router-link>
-            <div v-if="score.submission_status != 2">unsubmitted</div>
+
+            <router-link
+                v-if="score.submission_status"
+                :to="`/score/${score.id}`"
+                >More Info</router-link
+            >
+            <div v-if="score.submission_status != 2">Unsubmitted</div>
         </td>
     </tr>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import moment from "moment";
 import * as m from "@/util/mods";
 
 export default defineComponent({
@@ -38,6 +48,10 @@ export default defineComponent({
     methods: {
         comma: (n: number) =>
             n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+
+        time(date: Date) {
+            return moment(new Date(date)).fromNow();
+        },
     },
 
     computed: {
