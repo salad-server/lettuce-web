@@ -1,6 +1,6 @@
 <template>
-    <div v-if="data">
-        <table v-if="scoresExist">
+    <div v-if="data && scoresExist">
+        <table>
             <ScoreItem
                 v-for="score in data"
                 :key="score.id"
@@ -8,10 +8,10 @@
                 :mode="mode"
             />
         </table>
-        <h3 v-else>No scores yet!</h3>
 
         <button @click="$emit('clicked')">Load</button>
     </div>
+    <h3 v-else>No scores yet!</h3>
 </template>
 
 <script lang="ts">

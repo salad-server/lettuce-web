@@ -58,7 +58,7 @@ type AdvancedScore struct {
 	Status   int     `json:"submission_status"`
 	Date     string  `json:"play_date"`
 	Perfect  bool    `json:"perfect_score"`
-	Mode     int     `json:"play_mode"`
+	Mode     string  `json:"play_mode"`
 	Map      struct {
 		Title       string  `json:"title"`
 		Version     string  `json:"version"`
@@ -234,5 +234,6 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 	}
 
 	score.Map.MapStatus = scores.MapStatus[status]
+	score.Mode = scores.ConvertMode(score.Mode)
 	return score, nil
 }

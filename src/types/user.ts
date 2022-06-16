@@ -23,7 +23,7 @@ export interface Info {
     silence: number;
     register_time: number;
     last_online: number;
-    fav_mode: number;
+    fav_mode: string;
     playstyle: number;
     badge_name: string;
     badge_icon: string;

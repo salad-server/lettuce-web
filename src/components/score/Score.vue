@@ -1,6 +1,10 @@
 <template>
     <table>
         <tr>
+            <td>Gamemode</td>
+            <td>{{ score.play_mode }}</td>
+        </tr>
+        <tr>
             <td>PP/Score</td>
             <td>{{ comma(score.pp) }}pp / {{ comma(score.score) }}</td>
         </tr>
@@ -77,12 +81,12 @@ export default defineComponent({
 
         mods() {
             // prettier-ignore
-            const mode = ["std", "taiko", "catch", "mania"].indexOf(this.score.play_mode);
+            const mode = ["std", "taiko", "catch", "mania"].indexOf(this.score.play_mode.substr(3));
             const mods = m.convertMods(this.score.mods, mode);
             const str = m.modstr(mods);
 
             // prettier-ignore
-            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("");
+            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None!";
         },
 
         date() {

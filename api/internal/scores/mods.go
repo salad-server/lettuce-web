@@ -1,5 +1,7 @@
 package scores
 
+import "strconv"
+
 var Modes = map[string]int{
 	"vn!std":   0,
 	"vn!taiko": 1,
@@ -29,4 +31,14 @@ func ValidGamemode(m string) bool {
 	}
 
 	return false
+}
+
+func ConvertMode(m string) string {
+	for k, v := range Modes {
+		if strconv.Itoa(v) == m {
+			return k
+		}
+	}
+
+	return "unknown"
 }

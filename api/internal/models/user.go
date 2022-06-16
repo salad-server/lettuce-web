@@ -34,7 +34,7 @@ type Info struct {
 	Silence      int    `json:"silence"`
 	Register     int    `json:"register_time"`
 	LastOnline   int    `json:"last_online"`
-	FavMode      int    `json:"fav_mode"`
+	FavMode      string `json:"fav_mode"`
 	Playstyle    int    `json:"playstyle"`
 	BadgeName    string `json:"badge_name"`
 	BadgeIcon    string `json:"badge_icon"`
@@ -117,5 +117,6 @@ func (db *DB) UserInfo(uid int) (Info, error) {
 		return info, err
 	}
 
+	info.FavMode = scores.ConvertMode(info.FavMode)
 	return info, nil
 }

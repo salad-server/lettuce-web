@@ -23,7 +23,7 @@ type Beatmap struct {
 	MaxCombo    int     `json:"max_combo"`
 	Plays       int     `json:"plays"`
 	Passes      int     `json:"passes"`
-	Mode        int     `json:"mode"`
+	Mode        string  `json:"mode"`
 	BPM         float32 `json:"bpm"`
 	CS          float32 `json:"cs"`
 	AR          float32 `json:"ar"`
@@ -75,6 +75,14 @@ func (db *DB) BeatmapInfo(sid int) (Beatmap, error) {
 		return bmap, err
 	}
 
+	status, serr := strconv.Atoi(bmap.Status)
+	if serr != nil {
+		log.Println("Could not convert map status in BeatmapSets")
+		status = 0
+	}
+
+	bmap.Status = scores.MapStatus[status]
+	bmap.Mode = scores.ConvertMode(bmap.Mode)
 	return bmap, nil
 }
 
@@ -134,6 +142,7 @@ func (db *DB) BeatmapSets(bid int) ([]Beatmap, error) {
 		}
 
 		bmap.Status = scores.MapStatus[status]
+		bmap.Mode = scores.ConvertMode(bmap.Mode)
 		bmaps = append(bmaps, bmap)
 	}
 

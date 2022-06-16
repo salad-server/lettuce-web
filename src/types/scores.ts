@@ -36,7 +36,7 @@ export interface AdvancedScore {
     submission_status: number;
     play_date: string;
     perfect_score: boolean;
-    play_mode: number;
+    play_mode: string;
     map: AdvancedBeatmap;
 
     code?: number;
