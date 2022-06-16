@@ -12,6 +12,7 @@ func (app *application) routes() http.Handler {
 	mux.Use(cors.Handler(app.cors))
 
 	mux.Get("/", app.Index)
+	mux.Get("/users/scores", app.Scores)
 
 	return mux
 }
