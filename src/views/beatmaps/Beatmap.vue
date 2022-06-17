@@ -3,10 +3,10 @@
     <div v-else-if="!error">
         <div>
             <Info :map="currentMap" />
-            <InfoDrop :sets="setData" />
+            <InfoDrop :id="currentMap.id" :sets="setData" />
         </div>
 
-        <Leaderboard :data="currentMap" />
+        <Leaderboard :id="currentMap.id" :play_mode="currentMap.mode" />
     </div>
     <Error v-else :msg="errorMsg" />
 </template>

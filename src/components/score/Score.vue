@@ -60,7 +60,7 @@
     <b>
         Played by:
         <!-- prettier-ignore -->
-        <router-link :to="'/profile/' + score.uid">
+        <router-link :to="prof">
             <img :src="pfp" alt="Profile Picture" width="30" height="30" /> {{ score.username }}
         </router-link>
     </b>
@@ -75,6 +75,11 @@ import config from "../../../config.json";
 export default defineComponent({
     props: ["score"],
     computed: {
+        prof() {
+            const mm = this.score.play_mode.split("!");
+            return `/profile/${this.score.uid}?g=${mm[0]}&m=${mm[1]}`;
+        },
+
         pfp() {
             return `${config.avatar}/${this.score.uid}`;
         },
@@ -86,7 +91,7 @@ export default defineComponent({
             const str = m.modstr(mods);
 
             // prettier-ignore
-            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None!";
+            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None";
         },
 
         date() {
