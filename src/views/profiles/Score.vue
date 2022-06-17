@@ -41,9 +41,10 @@ export default defineComponent({
             // prettier-ignore
             const res: AdvancedScore = await fetch(`${config.api}/score/${this.id}`).then(j => j.json()).catch(() => {
                 this.error = true;
-                this.errorMsg = "Score not found!";
+                this.errorMsg = "Error loading score!";
             });
 
+            if (!res) return;
             if (res.id == 0 || [400, 500].includes(res?.code || 0)) {
                 this.error = true;
                 this.errorMsg = "Score could not be located! Check ID?";

@@ -51,6 +51,7 @@
 <script lang="ts">
 import { BeatmapScore } from "@/types/beatmap";
 import { defineComponent } from "vue";
+import Swal from "sweetalert2";
 
 import config from "../../../config.json";
 import LeaderboardItem from "./LeaderboardItem.vue";
@@ -82,12 +83,21 @@ export default defineComponent({
 
     methods: {
         async loadScores() {
-            // prettier-ignore
-            const res: BeatmapScore[] = await fetch(`${config.api}/beatmap/${this.id}/leaderboard?m=${this.mod}!${this.mode}&p=${this.page++}`).then((j) => j.json()).catch((e) => {
-                // TODO: Error messages
-                console.error(e);
-            });
+            const res: BeatmapScore[] = await fetch(
+                `${config.api}/beatmap/${this.id}/leaderboard?m=${this.mod}!${
+                    this.mode
+                }&p=${this.page++}`
+            )
+                .then((j) => j.json())
+                .catch(() => {
+                    Swal.fire({
+                        title: "API Error!",
+                        text: "Check your connection. Please report this to a staff member if the problem persists.",
+                        icon: "error",
+                    });
+                });
 
+            if (!res) return;
             const ids = this.scores.map((s: BeatmapScore) => s.id);
 
             res.forEach((r: BeatmapScore) => {

@@ -55,6 +55,7 @@ export default defineComponent({
                 this.errorMsg = "Could not load map!";
             });
 
+            if (!res) return;
             if (res?.code == 400 || res.length <= 0) {
                 this.error = true;
                 this.errorMsg = "Beatmap not found!";
