@@ -165,7 +165,7 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 			s.id, s.userid, u.name, s.score, s.pp, s.acc, s.max_combo, s.mods,
 			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
 			s.status, s.play_time, s.perfect, s.mode,
-			m.status, m.id as map_id, m.set_id, m.md5, m.artist, m.title, m.version,
+			m.status, m.id AS map_id, m.set_id, m.md5, m.artist, m.title, m.version,
 			m.creator, m.last_update, m.total_length, m.max_combo, m.bpm,
 			m.cs, m.ar, m.od, m.hp, m.diff
 		FROM scores s
@@ -234,7 +234,7 @@ func (db *DB) Records() (map[string]Records, error) {
 			s.id, s.userid, u.name, s.score, s.pp, s.acc, s.max_combo, s.mods,
 			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
 			s.status, s.play_time, s.perfect, s.mode,
-			m.status, m.id as map_id, m.set_id, m.md5, m.artist, m.title, m.version,
+			m.status, m.id AS map_id, m.set_id, m.md5, m.artist, m.title, m.version,
 			m.creator, m.last_update, m.total_length, m.max_combo, m.bpm,
 			m.cs, m.ar, m.od, m.hp, m.diff
 		FROM scores s

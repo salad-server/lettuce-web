@@ -12,8 +12,8 @@ import (
 func (app *application) Index(w http.ResponseWriter, r *http.Request) {
 	if app.conf.env == "development" {
 		app.JSON(w, devResponse{
-			Mode:  app.conf.env,
-			Front: app.conf.cors[0],
+			Mode:   app.conf.env,
+			Front:  app.conf.cors[0],
 			Uptime: app.getUptime(),
 		})
 
@@ -183,6 +183,30 @@ func (app *application) BeatmapLeaderboard(w http.ResponseWriter, r *http.Reques
 	}
 
 	res, err := app.DB.BeatmapLeaderboard(bid, page, mode)
+
+	if err != nil {
+		app.err.Println(err)
+		app.InternalError(w)
+
+		return
+	}
+
+	app.JSON(w, res)
+}
+
+func (app *application) Leaderboard(w http.ResponseWriter, r *http.Request) {
+	page, perr := strconv.Atoi(r.FormValue("p"))
+	sort, serr := strconv.Atoi(r.FormValue("s"))
+	mode := r.FormValue("m")
+
+	if perr != nil || serr != nil || page <= -1 || !scores.ValidGamemode(mode) {
+		app.BadRequest(w)
+		return
+	}
+
+	// 0 = pp
+	// 1 = score
+	res, err := app.DB.Leaderboard(sort != 1, mode, page)
 
 	if err != nil {
 		app.err.Println(err)
