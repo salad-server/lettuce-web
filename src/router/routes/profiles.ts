@@ -14,10 +14,4 @@ export default [
         props: true,
         component: Score,
     },
-    {
-        path: "/score/:id/download",
-        name: "Score Download",
-        props: true,
-        component: Score,
-    },
 ];

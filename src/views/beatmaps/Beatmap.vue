@@ -6,7 +6,12 @@
             <InfoDrop :id="currentMap.id" :sets="setData" />
         </div>
 
-        <Leaderboard :id="currentMap.id" :play_mode="currentMap.mode" />
+        <Leaderboard
+            v-if="allowlb"
+            :id="currentMap.id"
+            :play_mode="currentMap.mode"
+        />
+        <h3 v-else>No leaderboard available for this map!</h3>
     </div>
     <Error v-else :msg="errorMsg" />
 </template>
@@ -50,7 +55,7 @@ export default defineComponent({
                 this.errorMsg = "Could not load map!";
             });
 
-            if (res?.error || res.length <= 0) {
+            if (res?.code == 400 || res.length <= 0) {
                 this.error = true;
                 this.errorMsg = "Beatmap not found!";
                 return;
@@ -60,6 +65,18 @@ export default defineComponent({
             this.setData = res.sort(
                 (a: Beatmap, b: Beatmap) => a.diff - b.diff
             );
+        },
+    },
+
+    computed: {
+        allowlb(): boolean {
+            if (["Unranked", "Pending"].includes(this.currentMap.status)) {
+                return config.leaderboard.allow_unranked;
+            } else if (this.currentMap.status == "Loved") {
+                return config.leaderboard.allow_loved;
+            }
+
+            return true;
         },
     },
 });
