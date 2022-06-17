@@ -240,7 +240,7 @@ func (db *DB) Records() (map[string]Records, error) {
 		FROM scores s
 		JOIN maps m ON s.map_md5 = m.md5
 		JOIN users u ON s.userid = u.id
-		WHERE s.mode = ?
+		WHERE s.mode = ? AND m.status IN (2, 3, 4) AND s.status = 2
 		ORDER BY %s DESC LIMIT 1
 	`
 

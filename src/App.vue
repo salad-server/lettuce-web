@@ -14,3 +14,9 @@ export default defineComponent({
     },
 });
 </script>
+
+<style>
+.enabled {
+    color: red;
+}
+</style>

@@ -235,9 +235,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style scoped>
-.enabled {
-    color: red;
-}
-</style>

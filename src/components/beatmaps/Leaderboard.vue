@@ -16,32 +16,35 @@
         </div>
     </div>
 
-    <table v-if="anyscores">
-        <tr>
-            <td>Rank</td>
-            <td>Score</td>
-            <td>Accuracy</td>
-            <td>Player</td>
-            <td>Max Combo</td>
-            <td>300</td>
-            <td>100</td>
-            <td>50</td>
-            <td>Miss</td>
-            <td>PP</td>
-            <td>Date</td>
-            <td>Mods</td>
-            <td>Info</td>
-        </tr>
+    <div v-if="anyscores">
+        <table>
+            <tr>
+                <td>Rank</td>
+                <td>Score</td>
+                <td>Accuracy</td>
+                <td>Player</td>
+                <td>Max Combo</td>
+                <td>300</td>
+                <td>100</td>
+                <td>50</td>
+                <td>Miss</td>
+                <td>PP</td>
+                <td>Date</td>
+                <td>Mods</td>
+                <td>Info</td>
+            </tr>
 
-        <LeaderboardItem
-            v-for="(score, i) in scores"
-            :key="score.id"
-            :score="score"
-            :rank="i + 1"
-            :mod="mod"
-            :mode="mode"
-        />
-    </table>
+            <LeaderboardItem
+                v-for="(score, i) in scores"
+                :key="score.id"
+                :score="score"
+                :rank="i + 1"
+                :mod="mod"
+                :mode="mode"
+            />
+        </table>
+        <button @click="loadScores()">Load more</button>
+    </div>
     <h2 v-else>No scores yet :(</h2>
 </template>
 
@@ -153,9 +156,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style scoped>
-.enabled {
-    color: red;
-}
-</style>
