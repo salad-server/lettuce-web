@@ -86,7 +86,6 @@ type Records struct {
 
 // TODO: Disable results for restricted/banned users
 // TODO: Treat restricted users as banned
-// TODO: Proper CORS config
 // TODO: Cache record with redis. This query is brutal
 
 func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) {

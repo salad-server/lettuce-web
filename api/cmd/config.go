@@ -9,9 +9,16 @@ import (
 )
 
 type yamlConf struct {
-	Port int    `yaml:"PORT,omitempty"`
-	DSN  string `yaml:"DSN,omitempty"`
-	Mode string `yaml:"MODE,omitempty"`
+	Port int      `yaml:"PORT,omitempty"`
+	DSN  string   `yaml:"DSN,omitempty"`
+	Mode string   `yaml:"MODE,omitempty"`
+	Cors []string `yaml:"CORS,omitempty"`
+}
+
+type devResponse struct {
+	Mode   string `json:"mode"`
+	Front  string `json:"front"`
+	Uptime string `json:"uptime"`
 }
 
 func createConfig() {

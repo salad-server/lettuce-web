@@ -10,8 +10,17 @@ import (
 )
 
 func (app *application) Index(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{ "api": "ok" }`))
+	if app.conf.env == "development" {
+		app.JSON(w, devResponse{
+			Mode:  app.conf.env,
+			Front: app.conf.cors[0],
+			Uptime: app.getUptime(),
+		})
+
+		return
+	}
+
+	http.Redirect(w, r, app.conf.cors[0], http.StatusPermanentRedirect)
 }
 
 func (app *application) Scores(w http.ResponseWriter, r *http.Request) {

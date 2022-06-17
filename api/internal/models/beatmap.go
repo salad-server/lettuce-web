@@ -31,6 +31,25 @@ type Beatmap struct {
 	Difficulty  float32 `json:"diff"`
 }
 
+type MapScore struct {
+	ID       int     `json:"id"`
+	Score    int     `json:"score"`
+	Accuracy float32 `json:"acc"`
+	MaxCombo int     `json:"max_combo"`
+	Mods     int     `json:"mods"`
+	Count300 int     `json:"c300"`
+	Count100 int     `json:"c100"`
+	Count50  int     `json:"c50"`
+	Date     string  `json:"play_date"`
+	Miss     int     `json:"miss"`
+	PP       float32 `json:"pp"`
+	User     struct {
+		ID       string `json:"id"`
+		Username string `json:"username"`
+		Country  string `json:"country"`
+	} `json:"user"`
+}
+
 func (db *DB) BeatmapInfo(sid int) (Beatmap, error) {
 	q := `
 		SELECT
@@ -135,21 +154,22 @@ func (db *DB) BeatmapSets(bid int) ([]Beatmap, error) {
 	return bmaps, nil
 }
 
-func (db *DB) BeatmapLeaderboard(bid, page int, mode string) ([]Score, error) {
+func (db *DB) BeatmapLeaderboard(bid, page int, mode string) ([]MapScore, error) {
 	m := scores.Modes[mode]
 	q := `
 		SELECT
-			s.id, s.map_md5, s.score, s.pp, s.acc, s.max_combo, s.mods,
-			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
-			s.status, s.play_time, s.perfect, m.title, m.version,
-			m.set_id, m.id, m.status
+			s.id, s.score, s.acc,
+			u.name, u.country, s.userid,
+			s.max_combo, s.n300, s.n100, s.n50,
+			s.nmiss, s.pp, s.play_time, s.mods
 		FROM scores s
-		INNER JOIN maps m ON s.map_md5 = m.md5
+		JOIN users u ON u.id = s.userid
+		JOIN maps m ON s.map_md5 = m.md5
 		WHERE m.id = ? AND s.mode = ? AND s.status = 2
-		ORDER BY pp DESC LIMIT ?, 10
+		ORDER BY score DESC LIMIT ?, 10
 	`
 
-	var bmap_scores []Score
+	var bmap_scores []MapScore
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	row, err := db.Database.QueryContext(c, q, bid, m, page*PAGE_LEN)
 
@@ -161,37 +181,28 @@ func (db *DB) BeatmapLeaderboard(bid, page int, mode string) ([]Score, error) {
 	}
 
 	for row.Next() {
-		var score Score
+		var score MapScore
 
 		if err := row.Scan(
 			&score.ID,
-			&score.Map.MD5,
 			&score.Score,
-			&score.PP,
-			&score.Acc,
+			&score.Accuracy,
+			&score.User.Username,
+			&score.User.Country,
+			&score.User.ID,
 			&score.MaxCombo,
-			&score.Mods,
 			&score.Count300,
 			&score.Count100,
 			&score.Count50,
 			&score.Miss,
-			&score.Geki,
-			&score.Katu,
-			&score.Grade,
-			&score.Status,
+			&score.PP,
 			&score.Date,
-			&score.Perfect,
-			&score.Map.Title,
-			&score.Map.Version,
-			&score.Map.SetID,
-			&score.Map.MapID,
-			&score.Map.MapStatus,
+			&score.Mods,
 		); err != nil {
 			log.Println("Error in BeatmapLeaderboard")
 			return nil, err
 		}
 
-		score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
 		bmap_scores = append(bmap_scores, score)
 	}
 

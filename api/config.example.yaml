@@ -1,5 +1,14 @@
 DSN: <username>:<password>@tcp(localhost:3306)/<database_name> # MySQL DSN
 PORT: 8081 # API Port. Make sure this matches your nginx!
 
-# Environment mode (development | production | maintenance)
-MODE: dev
+# Environment mode (development | production)
+MODE: development
+
+# Cors options
+CORS:
+  - http://server-name.ca
+  - https://server-name.ca
+
+# For local testing
+# CORS:
+#   - http://192.168.0.19:8081 (or whatever port the frontend is)

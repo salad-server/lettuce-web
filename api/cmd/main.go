@@ -18,6 +18,7 @@ const version = "1.0.0"
 type config struct {
 	port int
 	env  string
+	cors []string
 	db   struct {
 		dsn string
 	}
@@ -51,13 +52,14 @@ func main() {
 	cfg := config{
 		port: c.Port,
 		env:  c.Mode,
+		cors: c.Cors,
 	}
 
 	cfg.db.dsn = c.DSN
 	infoLog := log.New(os.Stdout, "Info\t", log.Ldate|log.Ltime)
 	errLog := log.New(os.Stdout, "Error\t", log.Ldate|log.Ltime|log.Lshortfile)
-
 	conn, err := driver.OpenDB(cfg.db.dsn)
+
 	if err != nil {
 		errLog.Fatal(err)
 	}
@@ -69,7 +71,7 @@ func main() {
 		info: infoLog,
 		err:  errLog,
 		cors: cors.Options{
-			AllowedOrigins:   []string{"https://*", "http://*"},
+			AllowedOrigins:   cfg.cors,
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 			AllowCredentials: false,

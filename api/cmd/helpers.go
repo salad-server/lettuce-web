@@ -3,26 +3,34 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
+
+var uptime time.Time
+
+type errorRes struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
 
 func (app *application) BadRequest(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
 
-	w.Write([]byte(`{
-		"code": 400,
-		"error": "Bad request!"
-	}`))
+	app.JSON(w, errorRes{
+		Code:    400,
+		Message: "Bad request!",
+	})
 }
 
 func (app *application) InternalError(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
 
-	w.Write([]byte(`{
-		"code": 500,
-		"error": "Internal server error!"
-	}`))
+	app.JSON(w, errorRes{
+		Code:    500,
+		Message: "Internal server error!",
+	})
 }
 
 func (app *application) JSON(w http.ResponseWriter, jdata any) {
@@ -41,4 +49,12 @@ func (app *application) JSON(w http.ResponseWriter, jdata any) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(j)
+}
+
+func (app *application) getUptime() string {
+	return time.Since(uptime).String()
+}
+
+func init() {
+	uptime = time.Now()
 }
