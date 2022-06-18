@@ -14,6 +14,11 @@ func (app *application) routes() http.Handler {
 	mux.Get("/", app.Index)
 	mux.Get("/leaderboard", app.Leaderboard)
 
+	// docs
+	mux.Get("/docs", app.DocsListing)
+	mux.Get("/docs/", app.DocsListing)
+	mux.Handle("/docs/*", app.Docs())
+
 	// users
 	mux.Get("/users/{id}", app.Info)
 	mux.Get("/users/{id}/scores", app.Scores)

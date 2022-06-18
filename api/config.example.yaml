@@ -4,6 +4,9 @@ PORT: 8081 # API Port. Make sure this matches your nginx!
 # Environment mode (development | production)
 MODE: development
 
+# Relative directory for documentation
+DOCS: ../docs
+
 # Cors options
 CORS:
   - http://server-name.ca

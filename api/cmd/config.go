@@ -12,6 +12,7 @@ type yamlConf struct {
 	Port int      `yaml:"PORT,omitempty"`
 	DSN  string   `yaml:"DSN,omitempty"`
 	Mode string   `yaml:"MODE,omitempty"`
+	Docs string   `yaml:"DOCS,omitempty"`
 	Cors []string `yaml:"CORS,omitempty"`
 }
 

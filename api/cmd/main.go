@@ -18,6 +18,7 @@ const version = "1.0.0"
 type config struct {
 	port int
 	env  string
+	docs string
 	cors []string
 	db   struct {
 		dsn string
@@ -52,6 +53,7 @@ func main() {
 	cfg := config{
 		port: c.Port,
 		env:  c.Mode,
+		docs: c.Docs,
 		cors: c.Cors,
 	}
 

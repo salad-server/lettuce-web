@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -216,4 +217,29 @@ func (app *application) Leaderboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.JSON(w, res)
+}
+
+func (app *application) DocsListing(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir(app.conf.docs)
+	listing := make([]string, len(files))
+
+	if err != nil {
+		app.err.Println(err)
+		app.InternalError(w)
+
+		return
+	}
+
+	for i, f := range files {
+		listing[i] = f.Name()
+	}
+
+	app.JSON(w, listing)
+}
+
+func (app *application) Docs() http.Handler {
+	return http.StripPrefix(
+		"/docs/",
+		http.FileServer(http.Dir(app.conf.docs)),
+	)
 }
