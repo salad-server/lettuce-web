@@ -1,0 +1,9 @@
+{
+    "api": "https://wapi.servername.com",
+    "avatar": "http://a.servername.com",
+    
+    "leaderboard": {
+        "allow_unranked": true,
+        "allow_loved": true
+    }
+}
