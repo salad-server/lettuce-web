@@ -48,7 +48,7 @@ import Info from "@/components/profiles/Info.vue";
 import Scores from "@/components/profiles/Scores.vue";
 import Stats from "@/components/profiles/Stats.vue";
 
-import Swal from "sweetalert2";
+import * as alert from "@/util/error";
 import config from "../../../config.json";
 
 type Mode = "std" | "taiko" | "catch" | "mania";
@@ -66,14 +66,6 @@ function invalidModes(mode: Mode, mod: Mod) {
     const properMod = !["vn", "rx", "ap"].includes(mod);
 
     return properMode || properMod || !allowed[mode].includes(mod);
-}
-
-function fireAPIError() {
-    Swal.fire({
-        title: "API Error!",
-        text: "Check your connection. Please report this to a staff member if the problem persists.",
-        icon: "error",
-    });
 }
 
 export default defineComponent({
@@ -145,7 +137,7 @@ export default defineComponent({
         async loadStats() {
             // prettier-ignore
             const res: UserStats = await fetch(`${config.api}/users/${this.id}/stats?m=${this.mod}!${this.mode}`).then((j) => j.json()).catch((e) => {
-                fireAPIError();
+                alert.API();
                 console.error(e);
             });
 
@@ -155,7 +147,7 @@ export default defineComponent({
         async loadBest() {
             // prettier-ignore
             const best: Score[] = await fetch(`${config.api}/users/${this.id}/scores?m=${this.mod}!${this.mode}&b=1&p=${this.page.best++}`).then((j) => j.json()).catch((e) => {
-                fireAPIError();
+                alert.API();
                 console.error(e);
             });
 
@@ -171,7 +163,7 @@ export default defineComponent({
         async loadRecent() {
             // prettier-ignore
             const recent: Score[] = await fetch(`${config.api}/users/${this.id}/scores?m=${this.mod}!${this.mode}&b=0&p=${this.page.recent++}`).then((j) => j.json()).catch((e) => {
-                fireAPIError();
+                alert.API();
                 console.error(e);
             });
 

@@ -56,7 +56,7 @@
 import { defineComponent } from "vue";
 import { Leaderboard } from "@/types/ranking";
 
-import Swal from "sweetalert2";
+import * as alert from "@/util/error";
 import router from "@/router";
 
 import Error from "@/components/global/Error.vue";
@@ -113,11 +113,7 @@ export default defineComponent({
             )
                 .then((j) => j.json())
                 .catch(() => {
-                    Swal.fire({
-                        title: "API Error!",
-                        text: "Check your connection. Please report this to a staff member if the problem persists.",
-                        icon: "error",
-                    });
+                    alert.API();
                 });
 
             const ids = this.users.map((u: Leaderboard) => u.user.id);

@@ -9,6 +9,7 @@
     },
     "dependencies": {
         "moment": "^2.29.3",
+        "safe-marked": "^10.0.0",
         "sweetalert2": "^11.4.17",
         "vue": "^3.2.13",
         "vue-router": "^4.0.3"

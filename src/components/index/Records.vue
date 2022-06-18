@@ -28,7 +28,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Records } from "@/types/stats";
-import Swal from "sweetalert2";
+import * as alert from "@/util/error";
 
 import Loading from "../global/Loading.vue";
 import config from "../../../config.json";
@@ -54,11 +54,7 @@ export default defineComponent({
             const res: Records = await fetch(`${config.api}/score`)
                 .then((j) => j.json())
                 .catch(() => {
-                    Swal.fire({
-                        title: "API Error!",
-                        text: "Check your connection. Please report this to a staff member if the problem persists.",
-                        icon: "error",
-                    });
+                    alert.API();
                 });
 
             if (!res) return;

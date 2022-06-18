@@ -51,7 +51,7 @@
 <script lang="ts">
 import { BeatmapScore } from "@/types/beatmap";
 import { defineComponent } from "vue";
-import Swal from "sweetalert2";
+import * as alert from "@/util/error";
 
 import config from "../../../config.json";
 import LeaderboardItem from "./LeaderboardItem.vue";
@@ -89,13 +89,7 @@ export default defineComponent({
                 }&p=${this.page++}`
             )
                 .then((j) => j.json())
-                .catch(() => {
-                    Swal.fire({
-                        title: "API Error!",
-                        text: "Check your connection. Please report this to a staff member if the problem persists.",
-                        icon: "error",
-                    });
-                });
+                .catch(() => alert.API());
 
             if (!res) return;
             const ids = this.scores.map((s: BeatmapScore) => s.id);

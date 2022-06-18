@@ -1,15 +1,16 @@
-import About from "@/views/info/About.vue";
-import Stats from "@/views/info/Stats.vue";
+import Listing from "@/views/info/Listing.vue";
+import Doc from "@/views/info/Doc.vue";
 
 export default [
     {
-        path: "/info/about",
-        name: "About Info",
-        component: About,
+        path: "/info",
+        name: "Documentation",
+        component: Listing,
     },
     {
-        path: "/info/stats",
-        name: "About Stats",
-        component: Stats,
+        path: "/info/:doc",
+        name: "Document",
+        props: true,
+        component: Doc,
     },
 ];

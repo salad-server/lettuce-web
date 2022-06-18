@@ -3,8 +3,8 @@
         <router-link to="/">Home</router-link>
         <router-link to="/leaderboard?m=vn!std">Leaderboard</router-link>
         <div>
-            <router-link to="/info/about">About</router-link>
-            <router-link to="/info/stats">Stats</router-link>
+            <router-link to="/info">Documentation</router-link>
+            <router-link to="/info/help">Help</router-link>
         </div>
     </nav>
 </template>
