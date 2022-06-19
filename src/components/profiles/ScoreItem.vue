@@ -61,7 +61,7 @@ export default defineComponent({
             const str = m.modstr(mods);
 
             // prettier-ignore
-            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("");
+            return str.map((s) => `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`).join("");
         },
 
         showStatus() {

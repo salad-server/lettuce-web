@@ -1,53 +1,62 @@
 <template>
     <Error v-if="error" :msg="errorMsg" />
-    <div v-else>
-        <h1>{{ mode }}</h1>
+    <div v-else class="columns is-centered">
+        <div class="column is-8 has-text-centered">
+            <div class="my-5">
+                <div>
+                    <button
+                        v-for="m in playmodes"
+                        :class="isMode(m)"
+                        :key="m"
+                        @click="mode = m"
+                    >
+                        {{ m }}
+                    </button>
+                </div>
 
-        <div>
-            <div>
-                <button
-                    v-for="m in playmodes"
-                    :class="isMode(m)"
-                    :key="m"
-                    @click="mode = m"
-                >
-                    {{ m }}
-                </button>
+                <h1 class="is-size-1 my-5">Player Leaderboard</h1>
+
+                <div>
+                    <button :class="isSort(0)" @click="sort = 0">PP</button>
+                    <button :class="isSort(1)" @click="sort = 1">Score</button>
+                </div>
             </div>
 
-            <div>
-                <button :class="isSort(0)" @click="sort = 0">PP</button>
-                <button :class="isSort(1)" @click="sort = 1">Score</button>
+            <Loading v-if="loading" />
+            <div v-else>
+                <table v-if="anyplayers" class="table">
+                    <tr>
+                        <td>Rank</td>
+                        <td>User</td>
+                        <td>PP</td>
+                        <td>Total Score</td>
+                        <td>Ranked Score</td>
+                        <td>Playcount</td>
+                    </tr>
+
+                    <Rank
+                        v-for="(rank, i) in users"
+                        :key="rank.user.id"
+                        :rank="rank"
+                        :page="page + i"
+                        :mode="mode"
+                    />
+                </table>
+                <div v-else>
+                    <img
+                        src="/img/errors/no-players.png"
+                        alt="No players"
+                        width="400"
+                    />
+                    <h4 class="is-size-3">No players here...</h4>
+                </div>
             </div>
 
-            <div>
-                <button @click="updatePage(-1)">&lt;</button>
-                <span>{{ page + 1 }}</span>
-                <button @click="updatePage(1)">&gt;</button>
+            <div class="my-5">
+                <button class="button" @click="updatePage(-1)">&lt;</button>
+                <span class="is-size-6 mx-3">{{ page + 1 }}</span>
+                <button class="button" @click="updatePage(1)">&gt;</button>
             </div>
-        </div>
-
-        <Loading v-if="loading" />
-        <div v-else>
-            <table v-if="anyplayers">
-                <tr>
-                    <td>Rank</td>
-                    <td>User</td>
-                    <td>PP</td>
-                    <td>Total Score</td>
-                    <td>Ranked Score</td>
-                    <td>Playcount</td>
-                </tr>
-
-                <Rank
-                    v-for="(rank, i) in users"
-                    :key="rank.user.id"
-                    :rank="rank"
-                    :page="page + i"
-                    :mode="mode"
-                />
-            </table>
-            <h4 v-else>No players here...</h4>
         </div>
     </div>
 </template>
@@ -139,11 +148,11 @@ export default defineComponent({
         },
 
         isMode(what: string) {
-            return this.mode == what ? "enabled" : "";
+            return this.mode == what ? "is-primary button" : "button";
         },
 
         isSort(what: number) {
-            return this.sort == what ? "enabled" : "";
+            return this.sort == what ? "is-primary button" : "button";
         },
 
         updatePage(n: number) {
@@ -174,3 +183,18 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+table {
+    width: 100%;
+    text-align: left;
+}
+
+.column {
+    box-shadow: 0 1px 1px #000;
+}
+
+span {
+    line-height: 40px;
+}
+</style>

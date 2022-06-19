@@ -1,4 +1,6 @@
 {
+    "name": "osu-server-name",
+    "landing": "https://picsum.photos/800/600/?random",
     "api": "https://wapi.servername.com",
     "avatar": "http://a.servername.com",
     
