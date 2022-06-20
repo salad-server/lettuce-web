@@ -9,7 +9,6 @@ import Navbar from "@/components/global/Navbar.vue";
 
 // TODO: records style
 // TODO: something in home
-// TODO: remove .md from urls
 
 import "@/assets/main.scss";
 
@@ -48,6 +47,10 @@ export default defineComponent({
 .td-rank {
     width: 0.1%;
     white-space: nowrap;
+}
+
+.dcard {
+    box-shadow: 0 1px 1px #000;
 }
 
 .enabled {

@@ -31,10 +31,10 @@
                     <a class="navbar-link">More</a>
 
                     <div class="navbar-dropdown">
-                        <a class="navbar-item" href="/info/about.md">About</a>
-                        <a class="navbar-item" href="/info/rules.md">Rules</a>
+                        <a class="navbar-item" href="/info/about">About</a>
+                        <a class="navbar-item" href="/info/rules">Rules</a>
                         <!-- prettier-ignore -->
-                        <a class="navbar-item" href="/info/support.md">Support</a>
+                        <a class="navbar-item" href="/info/support">Support</a>
 
                         <hr class="navbar-divider" />
                         <a class="navbar-item">Source code</a>

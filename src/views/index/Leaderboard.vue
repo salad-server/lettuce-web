@@ -1,7 +1,7 @@
 <template>
     <Error v-if="error" :msg="errorMsg" />
     <div v-else class="columns is-centered">
-        <div class="column is-8 has-text-centered">
+        <div class="column dcard is-8 has-text-centered">
             <div class="my-5">
                 <div>
                     <button
@@ -188,10 +188,6 @@ export default defineComponent({
 table {
     width: 100%;
     text-align: left;
-}
-
-.column {
-    box-shadow: 0 1px 1px #000;
 }
 
 span {

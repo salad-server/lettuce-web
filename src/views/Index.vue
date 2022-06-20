@@ -13,7 +13,7 @@
                     <br />
                     <p class="has-text-centered">
                         <router-link
-                            to="/info/connect.md"
+                            to="/info/connect"
                             class="button is-medium is-info is-outlined mr-3"
                         >
                             Connection Guide
