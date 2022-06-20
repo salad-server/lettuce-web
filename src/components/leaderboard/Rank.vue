@@ -45,11 +45,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style scoped>
-.player * {
-    display: inline;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-</style>

@@ -4,6 +4,8 @@
             <a
                 role="button"
                 class="navbar-burger"
+                @click="nav = !nav"
+                :class="{ 'is-active': nav }"
                 aria-label="menu"
                 aria-expanded="false"
                 data-target="navbarmain"
@@ -14,7 +16,7 @@
             </a>
         </div>
 
-        <div id="navbarmain" class="navbar-menu">
+        <div id="navbarmain" class="navbar-menu" :class="{ 'is-active': nav }">
             <div class="navbar-start">
                 <router-link class="navbar-item" to="/">Home</router-link>
 
@@ -55,3 +57,15 @@
         </div>
     </nav>
 </template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+    data() {
+        return {
+            nav: false,
+        };
+    },
+});
+</script>

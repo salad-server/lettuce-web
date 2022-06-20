@@ -1,51 +1,53 @@
 <template>
-    <div>
-        <!-- prettier-ignore -->
+    <div class="column is-9 has-text-centered">
         <div>
-            <button :class="clicked('vn')" v-show="!enabled('vn')" @click="updateMod('vn')">vn</button>
-            <button :class="clicked('rx')" v-show="!enabled('rx')" @click="updateMod('rx')">rx</button>
-            <button :class="clicked('ap')" v-show="!enabled('ap')" @click="updateMod('ap')">ap</button>
+            <!-- prettier-ignore -->
+            <div class="my-1">
+                <button :class="clicked('vn')" v-show="!enabled('vn')" @click="updateMod('vn')">vn</button>
+                <button :class="clicked('rx')" v-show="!enabled('rx')" @click="updateMod('rx')">rx</button>
+                <button :class="clicked('ap')" v-show="!enabled('ap')" @click="updateMod('ap')">ap</button>
+            </div>
+
+            <!-- prettier-ignore -->
+            <div class="my-1" v-if="canSwitch">
+                <button :class="clicked('std')" v-show="!enabled('std')" @click="updateMode('std')">std</button>
+                <button :class="clicked('taiko')" v-show="!enabled('taiko')" @click="updateMode('taiko')">taiko</button>
+                <button :class="clicked('catch')" v-show="!enabled('catch')" @click="updateMode('catch')">catch</button>
+                <button :class="clicked('mania')" v-show="!enabled('mania')" @click="updateMode('mania')">mania</button>
+            </div>
         </div>
 
-        <!-- prettier-ignore -->
-        <div v-if="canSwitch">
-            <button :class="clicked('std')" v-show="!enabled('std')" @click="updateMode('std')">std</button>
-            <button :class="clicked('taiko')" v-show="!enabled('taiko')" @click="updateMode('taiko')">taiko</button>
-            <button :class="clicked('catch')" v-show="!enabled('catch')" @click="updateMode('catch')">catch</button>
-            <button :class="clicked('mania')" v-show="!enabled('mania')" @click="updateMode('mania')">mania</button>
+        <div v-if="anyscores" class="table-container">
+            <table class="table">
+                <tr>
+                    <td>Rank</td>
+                    <td>Score</td>
+                    <td>Accuracy</td>
+                    <td>Player</td>
+                    <td>Max Combo</td>
+                    <td>300</td>
+                    <td>100</td>
+                    <td>50</td>
+                    <td>Miss</td>
+                    <td>PP</td>
+                    <td>Date</td>
+                    <td>Mods</td>
+                    <td>Info</td>
+                </tr>
+
+                <LeaderboardItem
+                    v-for="(score, i) in scores"
+                    :key="score.id"
+                    :score="score"
+                    :rank="i + 1"
+                    :mod="mod"
+                    :mode="mode"
+                />
+            </table>
+            <button class="button" @click="loadScores()">Load more</button>
         </div>
+        <h2 v-else class="subtitle is-size-4 my-5">No scores yet :(</h2>
     </div>
-
-    <div v-if="anyscores">
-        <table>
-            <tr>
-                <td>Rank</td>
-                <td>Score</td>
-                <td>Accuracy</td>
-                <td>Player</td>
-                <td>Max Combo</td>
-                <td>300</td>
-                <td>100</td>
-                <td>50</td>
-                <td>Miss</td>
-                <td>PP</td>
-                <td>Date</td>
-                <td>Mods</td>
-                <td>Info</td>
-            </tr>
-
-            <LeaderboardItem
-                v-for="(score, i) in scores"
-                :key="score.id"
-                :score="score"
-                :rank="i + 1"
-                :mod="mod"
-                :mode="mode"
-            />
-        </table>
-        <button @click="loadScores()">Load more</button>
-    </div>
-    <h2 v-else>No scores yet :(</h2>
 </template>
 
 <script lang="ts">
@@ -114,7 +116,9 @@ export default defineComponent({
         },
 
         clicked(m: string) {
-            return [this.mod, this.mode].includes(m) ? "enabled" : "";
+            return [this.mod, this.mode].includes(m)
+                ? "is-primary button"
+                : "button";
         },
     },
 
@@ -160,3 +164,14 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+table {
+    width: 100%;
+    text-align: left;
+}
+
+span {
+    line-height: 40px;
+}
+</style>

@@ -7,7 +7,6 @@
 import { defineComponent } from "vue";
 import Navbar from "@/components/global/Navbar.vue";
 
-// TODO: records style
 // TODO: something in home
 
 import "@/assets/main.scss";
@@ -43,6 +42,7 @@ export default defineComponent({
 .status-pending { color: rgb(255, 126, 40); } /* prettier-ignore */
 .status-loved { color: rgb(235, 104, 126); } /* prettier-ignore */
 .status-qualified { color: rgb(117, 255, 104, 1); } /* prettier-ignore */
+.status-ranked { color: rgb(31, 155, 0); } /* prettier-ignore */
 
 .td-rank {
     width: 0.1%;
@@ -51,6 +51,12 @@ export default defineComponent({
 
 .dcard {
     box-shadow: 0 1px 1px #000;
+}
+
+.player * {
+    display: inline;
+    margin-right: 5px;
+    vertical-align: middle;
 }
 
 .enabled {
