@@ -1,16 +1,19 @@
 <template>
-    <h2>
-        <router-link :to="'/beatmaps/' + beatmap.map_id">
-            {{ beatmap.artist }} - {{ beatmap.title }} [{{ beatmap.version }}]
-        </router-link>
-    </h2>
-    <h4>
-        Mapped by
-        <a :href="'https://osu.ppy.sh/u/' + beatmap.creator" target="_blank">{{
-            beatmap.creator
-        }}</a>
-    </h4>
-    <table>
+    <div class="infos">
+        <h1 class="title">Beatmap Info</h1>
+        <h4 class="subtitle">
+            Mapped by
+            <a
+                :href="'https://osu.ppy.sh/u/' + beatmap.creator"
+                target="_blank"
+                >{{ beatmap.creator }}</a
+            >
+        </h4>
+
+        <img :src="icon" alt="Playmode Icon" />
+    </div>
+
+    <table class="table">
         <tr>
             <td>Beatmapset</td>
             <td>
@@ -69,11 +72,34 @@ import moment from "moment";
 // TODO: Download replay
 
 export default defineComponent({
-    props: ["beatmap"],
+    props: ["beatmap", "mode"],
     computed: {
         len() {
             return moment.utc(this.beatmap.len * 1000).format("HH:mm:ss");
         },
+
+        icon() {
+            return `/img/games/${this.mode.split("!")[1]}.png`;
+        },
     },
 });
 </script>
+
+<style scoped>
+table {
+    width: 100%;
+}
+
+.infos {
+    position: relative;
+}
+
+img {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    left: calc(100% - 80px);
+    transform: rotate(-10deg);
+}
+</style>

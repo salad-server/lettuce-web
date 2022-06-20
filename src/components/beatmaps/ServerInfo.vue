@@ -24,7 +24,9 @@
 
     <div class="outer-buttons">
         <!-- TODO: Play button -->
-        <button class="button play">Play</button>
+        <button class="button play" @click="togglePlay()">
+            {{ playing ? "Stop" : "Play" }}
+        </button>
         <button class="button download" @click="open('osu://dl/' + map.set_id)">
             Download
         </button>
@@ -42,6 +44,13 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
     props: ["map"],
+    data() {
+        return {
+            playing: false,
+            audio: new Audio(),
+        };
+    },
+
     computed: {
         creator() {
             return "https://osu.ppy.sh/u/" + this.map.creator;
@@ -55,6 +64,21 @@ export default defineComponent({
     methods: {
         open(url: string) {
             window.location.href = url;
+        },
+
+        togglePlay() {
+            this.playing = !this.playing;
+
+            if (this.playing) {
+                this.audio = new Audio(
+                    `https://b.ppy.sh/preview/${this.map.set_id}.mp3`
+                );
+
+                this.audio.play();
+                return;
+            }
+
+            this.audio.pause();
         },
     },
 });

@@ -39,7 +39,7 @@
                         <a class="navbar-item" href="/info/support">Support</a>
 
                         <hr class="navbar-divider" />
-                        <a class="navbar-item">Source code</a>
+                        <a class="navbar-item" :href="source">Source code</a>
                     </div>
                 </div>
             </div>
@@ -60,12 +60,19 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import config from "../../../config.json";
 
 export default defineComponent({
     data() {
         return {
             nav: false,
         };
+    },
+
+    computed: {
+        source() {
+            return config.source;
+        },
     },
 });
 </script>
