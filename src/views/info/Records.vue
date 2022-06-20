@@ -1,6 +1,6 @@
 <template>
     <Loading v-if="!loaded" />
-    <div v-else class="columns is-centered mt-5">
+    <div v-else class="columns is-mobile is-centered mt-5">
         <div class="column is-8">
             <h3 class="subtitle is-size-3">{{ show }} Records</h3>
             <p class="my-5">

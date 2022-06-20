@@ -1,10 +1,15 @@
 <template>
-    <div v-if="scoreExists" class="grid-item columns">
-        <div class="column is-2">
+    <div v-if="scoreExists" class="grid-item columns is-mobile">
+        <div class="column is-2 pfp">
             <img :src="pfp" width="70" height="70" />
         </div>
         <div class="column is-1">
-            <h1 class="rank">{{ score.rank }}</h1>
+            <h1
+                class="rank is-size-2"
+                :class="'rank-' + score.rank.toLowerCase()"
+            >
+                {{ score.rank }}
+            </h1>
         </div>
         <div class="column">
             <router-link :to="'/beatmaps/' + score.map.map_id">
@@ -18,12 +23,18 @@
                     {{ comma(score.score) }}
                 </span>
 
-                <div style="float: right">
+                <div class="pfp-name">
                     <router-link :to="pflink">{{ score.username }}</router-link>
                 </div>
 
                 <div>
                     <b>{{ score.play_mode }}</b>
+                    <div class="pfp-m">
+                        <span>Set by: </span>
+                        <router-link :to="pflink">{{
+                            score.username
+                        }}</router-link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,5 +83,24 @@ export default defineComponent({
     font-size: 30px;
     font-weight: bolder;
     max-height: 100px;
+}
+
+.pfp-m {
+    display: none;
+}
+
+.pfp-name {
+    float: right;
+}
+
+@media screen and (max-width: 768px) {
+    .pfp,
+    .pfp-name {
+        display: none !important;
+    }
+
+    .pfp-m {
+        display: block !important;
+    }
 }
 </style>

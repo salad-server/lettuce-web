@@ -1,37 +1,57 @@
 <template>
     <Loading v-if="loading" />
-    <div v-else-if="!error">
-        <Info :id="id" :info="info" />
-        <Stats :stats="stats" />
+    <div v-else-if="!error" class="columns is-mobile is-centered">
+        <div class="column is-11">
+            <div class="columns">
+                <div class="column is-3">
+                    <Info :id="id" :info="info" />
 
-        <hr />
+                    <div class="has-text-centered my-3">
+                        <!-- prettier-ignore -->
+                        <div class="my-1">
+                            <button :class="clicked('vn')" :disabled="enabled('vn')" @click="updateMod('vn')">vn</button>
+                            <button :class="clicked('rx')" :disabled="enabled('rx')" @click="updateMod('rx')">rx</button>
+                            <button :class="clicked('ap')" :disabled="enabled('ap')" @click="updateMod('ap')">ap</button>
+                        </div>
 
-        <div>
-            <!-- prettier-ignore -->
-            <div>
-                <button :class="clicked('vn')" :disabled="enabled('vn')" @click="updateMod('vn')">vn</button>
-                <button :class="clicked('rx')" :disabled="enabled('rx')" @click="updateMod('rx')">rx</button>
-                <button :class="clicked('ap')" :disabled="enabled('ap')" @click="updateMod('ap')">ap</button>
-            </div>
+                        <!-- prettier-ignore -->
+                        <div class="my-1">
+                            <button :class="clicked('std')" :disabled="enabled('std')" @click="updateMode('std')">std</button>
+                            <button :class="clicked('taiko')" :disabled="enabled('taiko')" @click="updateMode('taiko')">taiko</button>
+                            <button :class="clicked('catch')" :disabled="enabled('catch')" @click="updateMode('catch')">catch</button>
+                            <button :class="clicked('mania')" :disabled="enabled('mania')" @click="updateMode('mania')">mania</button>
+                        </div>
+                    </div>
 
-            <!-- prettier-ignore -->
-            <div>
-                <button :class="clicked('std')" :disabled="enabled('std')" @click="updateMode('std')">std</button>
-                <button :class="clicked('taiko')" :disabled="enabled('taiko')" @click="updateMode('taiko')">taiko</button>
-                <button :class="clicked('catch')" :disabled="enabled('catch')" @click="updateMode('catch')">catch</button>
-                <button :class="clicked('mania')" :disabled="enabled('mania')" @click="updateMode('mania')">mania</button>
+                    <Stats :stats="stats" />
+                </div>
+
+                <div class="column">
+                    <div v-if="info.bio">
+                        <div class="divider">About</div>
+                        <p>{{ info.bio }}</p>
+                    </div>
+
+                    <div>
+                        <div class="divider">Best Scores</div>
+                        <Scores
+                            :data="best"
+                            @clicked="loadBest()"
+                            :mode="mode"
+                        />
+                    </div>
+
+                    <div>
+                        <div class="divider">Recent Scores</div>
+                        <Scores
+                            :data="recent"
+                            @clicked="loadRecent()"
+                            :mode="mode"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
-
-        <p>{{ info.bio }}</p>
-        <hr />
-
-        <h2>Best Scores</h2>
-        <Scores :data="best" @clicked="loadBest()" :mode="mode" />
-
-        <hr />
-        <h2>Recent Scores</h2>
-        <Scores :data="recent" @clicked="loadRecent()" :mode="mode" />
     </div>
     <Error v-else :msg="errorMsg" />
 </template>
@@ -195,7 +215,9 @@ export default defineComponent({
         },
 
         clicked(m: string) {
-            return [this.mod, this.mode].includes(m) ? "enabled" : "";
+            return [this.mod, this.mode].includes(m)
+                ? "is-primary button"
+                : "button";
         },
     },
 
@@ -237,3 +259,13 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.switch-btn {
+    display: block !important;
+}
+
+.my-1 button {
+    margin: 0 5px;
+}
+</style>
