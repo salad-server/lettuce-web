@@ -9,9 +9,11 @@
             />
         </table>
 
-        <button @click="$emit('clicked')">Load</button>
+        <button class="button" @click="$emit('clicked')">Load More</button>
     </div>
-    <h3 v-else>No scores yet!</h3>
+    <h3 v-else class="has-text-centered is-size-4 title addtop">
+        No scores yet!
+    </h3>
 </template>
 
 <script lang="ts">
@@ -28,3 +30,25 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+table {
+    width: 100%;
+}
+
+.button {
+    display: block;
+    margin: 0 auto;
+}
+
+.addtop {
+    margin: 50px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+@media screen and (max-width: 768px) {
+    button {
+        width: 80%;
+    }
+}
+</style>

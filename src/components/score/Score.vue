@@ -1,5 +1,12 @@
 <template>
-    <table>
+    <h2>
+        <router-link class="title" :to="'/beatmaps/' + score.map.map_id">
+            {{ score.map.artist }} - {{ score.map.title }} [{{
+                score.map.version
+            }}]
+        </router-link>
+    </h2>
+    <table class="table">
         <tr>
             <td>Gamemode</td>
             <td>{{ score.play_mode }}</td>
@@ -49,7 +56,9 @@
         </tr>
         <tr>
             <td>Grade</td>
-            <td>{{ score.rank }}</td>
+            <td :class="'rank rank-' + score.rank.toLowerCase()">
+                {{ score.rank }}
+            </td>
         </tr>
         <tr>
             <td>Date:</td>
@@ -91,7 +100,7 @@ export default defineComponent({
             const str = m.modstr(mods);
 
             // prettier-ignore
-            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None";
+            return str.map((s) => `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None";
         },
 
         date() {
@@ -108,3 +117,36 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+b {
+    float: right;
+}
+
+b img {
+    display: inline;
+    vertical-align: middle;
+    margin: 0 5px;
+    width: 1.3em;
+    height: 1.3em;
+}
+
+.title {
+    display: block;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #fff;
+}
+
+.title:hover {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
+}
+
+table {
+    background-color: transparent;
+    color: #fff;
+    width: 80%;
+    margin: auto;
+}
+</style>

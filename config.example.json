@@ -1,6 +1,9 @@
 {
+    "name": "osu-server-name",
+    "landing": "https://picsum.photos/800/600/?random",
     "api": "https://wapi.servername.com",
     "avatar": "http://a.servername.com",
+    "source": "https://github.com/Cyan903/mini-web",
     
     "leaderboard": {
         "allow_unranked": true,

@@ -3,10 +3,12 @@
         <td>#{{ rank }}</td>
         <td>{{ comma(score.score) }}</td>
         <td>{{ score.acc.toFixed(2) }}%</td>
-        <td>
+        <td class="player">
             <router-link :to="prof">
-                <span>{{ score.user.country }}</span> |
-                <span>{{ score.user.username }}</span>
+                <img :src="flag" :alt="score.user.country" width="20" />
+                <span>
+                    {{ score.user.username }}
+                </span>
             </router-link>
         </td>
         <td>{{ comma(score.max_combo) }}</td>
@@ -18,7 +20,7 @@
         <td>{{ time }}</td>
         <td v-html="mods"></td>
         <td>
-            <router-link :to="'/score/' + score.id">Info</router-link>
+            <router-link :to="'/score/' + score.id">{{ score.id }}</router-link>
         </td>
     </tr>
 </template>
@@ -46,11 +48,15 @@ export default defineComponent({
             const str = m.modstr(mods);
 
             // prettier-ignore
-            return str.map((s) => `<img src="/img/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None";
+            return str.map((s) => `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None";
         },
 
         prof() {
             return `/profile/${this.score.user.id}?g=${this.mod}&m=${this.mode}`;
+        },
+
+        flag() {
+            return `/img/flags/flag-${this.score.user.country}.svg`;
         },
     },
 });

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table>
+        <table class="table">
             <tr>
                 <td>Total Score</td>
                 <td>{{ cstats.total_score }}</td>
@@ -35,28 +35,29 @@
             </tr>
         </table>
 
-        <table>
-            <tr>
-                <td>XH</td>
-                <td>{{ cstats.count_xh }}</td>
-            </tr>
-            <tr>
-                <td>SH</td>
-                <td>{{ cstats.count_sh }}</td>
-            </tr>
-            <tr>
-                <td>X</td>
-                <td>{{ cstats.count_x }}</td>
-            </tr>
-            <tr>
-                <td>S</td>
-                <td>{{ cstats.count_s }}</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>{{ cstats.count_a }}</td>
-            </tr>
-        </table>
+        <div class="ranks has-text-centered">
+            <div>
+                <span class="rank rank-xh">XH</span>
+                <span>{{ cstats.count_xh }}</span>
+            </div>
+            <div>
+                <span class="rank rank-sh">SH</span>
+                <span>{{ cstats.count_sh }}</span>
+            </div>
+            <br />
+            <div>
+                <span class="rank rank-x">X</span>
+                <span>{{ cstats.count_x }}</span>
+            </div>
+            <div>
+                <span class="rank rank-s">S</span>
+                <span>{{ cstats.count_s }}</span>
+            </div>
+            <div>
+                <span class="rank rank-a">A</span>
+                <span>{{ cstats.count_a }}</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -90,3 +91,35 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.ranks {
+    font-size: 2em;
+    font-family: "Rubik", sans-serif;
+    font-weight: lighter;
+}
+
+.ranks div {
+    margin: 5px;
+    display: inline-block;
+}
+
+.ranks span {
+    margin-left: 5px;
+}
+
+.rank:after {
+    content: ":";
+    font-weight: lighter;
+}
+
+.table {
+    width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    table {
+        text-align: center;
+    }
+}
+</style>

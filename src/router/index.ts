@@ -1,4 +1,6 @@
+/* eslint-disable */
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import config from "../../config.json";
 
 import Index from "../views/Index.vue";
 import NotFound from "../views/NotFound.vue";
@@ -11,7 +13,7 @@ import profiles from "./routes/profiles";
 const routes: Array<RouteRecordRaw> = [
     {
         path: "/",
-        name: "Index",
+        name: "Home",
         component: Index,
     },
 
@@ -29,6 +31,11 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes,
+});
+
+router.beforeEach((to: any, from, next) => {
+    (document.title as any) = `${to.name} | ${config.name}`;
+    next();
 });
 
 export default router;

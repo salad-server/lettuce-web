@@ -1,7 +1,11 @@
 <template>
     <Loading v-if="loading" />
     <Error v-else-if="error" :msg="errorMsg" />
-    <div v-html="tohtml"></div>
+    <div class="columns is-mobile is-centered mt-2">
+        <div class="column dcard is-2">
+            <div class="content" v-html="tohtml"></div>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -27,7 +31,7 @@ export default defineComponent({
     },
 
     async mounted() {
-        await fetch(`${config.api}/docs/${this.doc}`)
+        await fetch(`${config.api}/docs/${this.doc}.md`)
             .then(async (t) => {
                 if (t.status != 200) {
                     throw t.status;
@@ -50,3 +54,9 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.dcard {
+    width: 70% !important;
+}
+</style>

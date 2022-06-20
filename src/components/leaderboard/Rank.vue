@@ -1,9 +1,13 @@
 <template>
     <tr>
-        <td>#{{ page + 1 }}</td>
-        <td>
+        <td class="td-rank">#{{ page + 1 }}</td>
+        <td class="player">
             <router-link :to="pflink">
-                {{ rank.user.country }} | {{ rank.user.username }}
+                <img :src="pfp" alt="Profile Picture" width="40" height="40" />
+                <img :src="flag" :alt="rank.user.country" width="20" />
+                <span>
+                    {{ rank.user.username }}
+                </span>
             </router-link>
         </td>
         <td>{{ comma(rank.pp) }}pp</td>
@@ -15,14 +19,23 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import config from "../../../config.json";
 
 export default defineComponent({
     props: ["page", "rank", "mode"],
     computed: {
+        pfp() {
+            return `${config.avatar}/${this.rank.user.id}`;
+        },
+
         pflink() {
             const m = this.mode.split("!");
 
             return `/profile/${this.rank.user.id}?g=${m[0]}&m=${m[1]}`;
+        },
+
+        flag() {
+            return `/img/flags/flag-${this.rank.user.country}.svg`;
         },
     },
 
