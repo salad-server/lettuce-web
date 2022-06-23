@@ -13,6 +13,7 @@
                 <b>{{ score.map.title }} [{{ score.map.version }}]</b>
             </router-link>
             <div class="td-m">
+                <b>{{ score.acc.toFixed(2) }}% | </b>
                 <b>{{ comma(score.score) }} | </b>
                 <span>
                     {{ comma(score.c300) }} / {{ comma(score.c100) }} /
