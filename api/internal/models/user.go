@@ -72,11 +72,9 @@ func (db *DB) UserStats(uid int, mode string) (Stats, error) {
 		&stats.SH,
 		&stats.S,
 		&stats.A,
-	); err != nil {
-		if err != sql.ErrNoRows {
-			log.Println("Error in UserStats")
-			return stats, err
-		}
+	); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in UserStats")
+		return stats, err
 	}
 
 	return stats, nil
@@ -108,11 +106,9 @@ func (db *DB) UserInfo(uid int) (Info, error) {
 		&info.BadgeName,
 		&info.BadgeIcon,
 		&info.Bio,
-	); err != nil {
-		if err != sql.ErrNoRows {
-			log.Println("Error in UserInfo")
-			return info, err
-		}
+	); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in UserInfo")
+		return info, err
 	}
 
 	info.FavMode = scores.ConvertMode(info.FavMode)

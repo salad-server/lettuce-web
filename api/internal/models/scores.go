@@ -216,11 +216,9 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 		&score.Map.OD,
 		&score.Map.HP,
 		&score.Map.Diff,
-	); err != nil {
-		if err != sql.ErrNoRows {
-			log.Println("Error in ScoreInfo")
-			return score, err
-		}
+	); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in ScoreInfo")
+		return score, err
 	}
 
 	score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
@@ -290,11 +288,9 @@ func (db *DB) Records() (map[string]Records, error) {
 			&record_pp.Map.CS, &record_pp.Map.AR,
 			&record_pp.Map.OD, &record_pp.Map.HP,
 			&record_pp.Map.Diff,
-		); err != nil {
-			if err != sql.ErrNoRows {
-				log.Println("Error in Records")
-				return records, err
-			}
+		); err != nil && err != sql.ErrNoRows {
+			log.Println("Error in Records")
+			return records, err
 		}
 
 		record_pp.Map.MapStatus = scores.ConvertStatus(record_pp.Map.MapStatus)
@@ -319,11 +315,9 @@ func (db *DB) Records() (map[string]Records, error) {
 			&record_score.Map.CS, &record_score.Map.AR,
 			&record_score.Map.OD, &record_score.Map.HP,
 			&record_score.Map.Diff,
-		); err != nil {
-			if err != sql.ErrNoRows {
-				log.Println("Error in Records")
-				return records, err
-			}
+		); err != nil && err != sql.ErrNoRows {
+			log.Println("Error in Records")
+			return records, err
 		}
 
 		record_score.Map.MapStatus = scores.ConvertStatus(record_score.Map.MapStatus)

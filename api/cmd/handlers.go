@@ -35,7 +35,7 @@ func (app *application) Scores(w http.ResponseWriter, r *http.Request) {
 	badArgs := (uid <= -1 || best < 0 || best > 1 || page <= -1)
 
 	if badParams || badArgs || !scores.ValidGamemode(mode) {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -43,7 +43,7 @@ func (app *application) Scores(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -56,7 +56,7 @@ func (app *application) Score(w http.ResponseWriter, r *http.Request) {
 	sid, err := strconv.Atoi(id)
 
 	if err != nil {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -64,7 +64,7 @@ func (app *application) Score(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -78,7 +78,7 @@ func (app *application) Stats(w http.ResponseWriter, r *http.Request) {
 	uid, serr := strconv.Atoi(id)
 
 	if serr != nil || !scores.ValidGamemode(mode) {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (app *application) Stats(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -99,7 +99,7 @@ func (app *application) Info(w http.ResponseWriter, r *http.Request) {
 	uid, serr := strconv.Atoi(id)
 
 	if serr != nil {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -107,7 +107,7 @@ func (app *application) Info(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -120,7 +120,7 @@ func (app *application) Beatmap(w http.ResponseWriter, r *http.Request) {
 	bid, serr := strconv.Atoi(id)
 
 	if serr != nil {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -128,7 +128,7 @@ func (app *application) Beatmap(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -141,7 +141,7 @@ func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
 	bid, serr := strconv.Atoi(id)
 
 	if serr != nil {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -149,7 +149,7 @@ func (app *application) BeatmapSets(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -162,7 +162,7 @@ func (app *application) Records(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 		return
 	}
 
@@ -179,7 +179,7 @@ func (app *application) BeatmapLeaderboard(w http.ResponseWriter, r *http.Reques
 	badArgs := (bid <= -1 || page <= -1)
 
 	if badParams || badArgs {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -187,7 +187,7 @@ func (app *application) BeatmapLeaderboard(w http.ResponseWriter, r *http.Reques
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -201,7 +201,7 @@ func (app *application) Leaderboard(w http.ResponseWriter, r *http.Request) {
 	mode := r.FormValue("m")
 
 	if perr != nil || serr != nil || page <= -1 || !scores.ValidGamemode(mode) {
-		app.BadRequest(w)
+		app.badRequest(w)
 		return
 	}
 
@@ -211,7 +211,7 @@ func (app *application) Leaderboard(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
@@ -225,7 +225,7 @@ func (app *application) DocsListing(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err.Println(err)
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}

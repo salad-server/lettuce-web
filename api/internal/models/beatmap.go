@@ -85,11 +85,9 @@ func (db *DB) BeatmapInfo(sid int) (Beatmap, error) {
 		&bmap.OD,
 		&bmap.HP,
 		&bmap.Difficulty,
-	); err != nil {
-		if err != sql.ErrNoRows {
-			log.Println("Error in BeatmapInfo")
-			return bmap, err
-		}
+	); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in BeatmapInfo")
+		return bmap, err
 	}
 
 	bmap.Status = scores.ConvertStatus(bmap.Status)

@@ -13,7 +13,7 @@ type errorRes struct {
 	Message string `json:"message"`
 }
 
-func (app *application) BadRequest(w http.ResponseWriter) {
+func (app *application) badRequest(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
 
@@ -23,7 +23,7 @@ func (app *application) BadRequest(w http.ResponseWriter) {
 	})
 }
 
-func (app *application) InternalError(w http.ResponseWriter) {
+func (app *application) internalError(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
 
@@ -38,7 +38,7 @@ func (app *application) JSON(w http.ResponseWriter, jdata any) {
 
 	if err != nil {
 		app.err.Println("Could not parse data!")
-		app.InternalError(w)
+		app.internalError(w)
 
 		return
 	}
