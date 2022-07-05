@@ -77,7 +77,7 @@ func main() {
 		cors: cors.Options{
 			AllowedOrigins:   cfg.cors,
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "Token"},
 			AllowCredentials: false,
 			MaxAge:           300,
 		},

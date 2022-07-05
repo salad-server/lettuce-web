@@ -6,15 +6,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Navbar from "@/components/global/Navbar.vue";
-
-// TODO: something in home
-
 import "@/assets/main.scss";
 
 export default defineComponent({
     name: "HomeView",
     components: {
         Navbar,
+    },
+
+    mounted() {
+        const storage = localStorage.getItem("token");
+        if (!storage) return;
+
+        this.$store.commit("login", storage);
     },
 });
 </script>

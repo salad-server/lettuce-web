@@ -324,11 +324,11 @@ func (app *application) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 	_, merr := mail.ParseAddress(res.Email)
 
-	// bio cannot be 10,000 characters
+	// bio cannot be 2,000 characters
 	// country must be valid
 	// playstyle... is the playstyle
 	// email must be valid
-	if len(res.Bio) > 10000 || !app.validCountry(res.Country) || merr != nil {
+	if len(res.Bio) > 2000 || !app.validCountry(res.Country) || merr != nil {
 		app.badRequest(w)
 		app.err.Println(merr, res)
 		return
