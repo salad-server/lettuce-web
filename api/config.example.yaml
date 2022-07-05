@@ -4,6 +4,9 @@ PORT: 8081 # API Port. Make sure this matches your nginx!
 # Environment mode (development | production)
 MODE: development
 
+# JWT Secret (you can generate one here: https://www.grc.com/passwords.htm)
+SECRET: hello-world
+
 # Relative directory for documentation
 DOCS: ../docs
 

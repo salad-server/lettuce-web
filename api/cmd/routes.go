@@ -14,6 +14,19 @@ func (app *application) routes() http.Handler {
 	mux.Get("/", app.Index)
 	mux.Get("/leaderboard", app.Leaderboard)
 
+	// auth
+	mux.Post("/login", app.Login)
+	// mux.Post("/register", app.Register)
+
+	mux.Route("/@me", func(r chi.Router) {
+		r.Use(app.IsAuthed)
+		r.Get("/", app.WhoAmI)
+		// r.Get("/friends", app.Friends)
+		r.Get("/profile", app.GetProfile)
+	
+		r.Post("/profile", app.UpdateProfile)
+	})
+
 	// docs
 	mux.Get("/docs", app.DocsListing)
 	mux.Get("/docs/", app.DocsListing)
@@ -25,8 +38,8 @@ func (app *application) routes() http.Handler {
 	mux.Get("/users/{id}/stats", app.Stats)
 
 	// scores
-	mux.Get("/score/{id}", app.Score)
 	mux.Get("/score", app.Records)
+	mux.Get("/score/{id}", app.Score)
 
 	// beatmap
 	mux.Get("/beatmap/{id}", app.Beatmap)
