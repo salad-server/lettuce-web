@@ -10,6 +10,10 @@ SECRET: hello-world
 # Relative directory for documentation
 DOCS: ../docs
 
+# Profile photo options
+PFP_PATH: /home/username/example/bancho.py/.data/avatars # path to server's avatars
+PFP_MAX: 1000000 # Profile photo size limit in bytes
+
 # Cors options
 CORS:
   - http://server-name.ca

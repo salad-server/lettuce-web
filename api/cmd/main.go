@@ -24,6 +24,11 @@ type config struct {
 	db     struct {
 		dsn string
 	}
+
+	profile struct {
+		path string
+		max  int64
+	}
 }
 
 type application struct {
@@ -57,6 +62,10 @@ func main() {
 		docs:   c.Docs,
 		secret: c.Secret,
 		cors:   c.Cors,
+		profile: struct{path string; max int64}{
+			path: c.ProfilePath,
+			max: c.ProfileMax,
+		},
 	}
 
 	cfg.db.dsn = c.DSN

@@ -21,10 +21,12 @@ func (app *application) routes() http.Handler {
 	mux.Route("/@me", func(r chi.Router) {
 		r.Use(app.IsAuthed)
 		r.Get("/", app.WhoAmI)
-		// r.Get("/friends", app.Friends)
+
 		r.Get("/profile", app.GetProfile)
-	
 		r.Post("/profile", app.UpdateProfile)
+
+		r.Post("/pfp", app.ProfilePicture)
+		r.Delete("/pfp", app.ProfilePictureRemove)
 	})
 
 	// docs

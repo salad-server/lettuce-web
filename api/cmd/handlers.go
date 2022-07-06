@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/md5"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/mail"
+	"os"
 	"strconv"
 
 	"mini-api/internal/scores"
@@ -330,11 +332,77 @@ func (app *application) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	// email must be valid
 	if len(res.Bio) > 2000 || !app.validCountry(res.Country) || merr != nil {
 		app.badRequest(w)
-		app.err.Println(merr, res)
 		return
 	}
 
 	if err := app.DB.ProfileUpdate(res.Bio, res.Country, res.Email, res.Playstyle, uid); err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.JSON(w, errorRes{
+		Code:    200,
+		Message: "success!",
+	})
+}
+
+func (app *application) ProfilePicture(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(app.conf.profile.max)
+
+	uid := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	file, handler, err := r.FormFile("file")
+
+	if err != nil || handler.Size > app.conf.profile.max {
+		app.badRequest(w)
+		return
+	}
+
+	buff, err := ioutil.ReadAll(file)
+	defer file.Close()
+
+	if err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	if ftype := http.DetectContentType(buff); ftype != "image/png" && ftype != "image/jpeg" {
+		app.err.Println(handler.Filename, "is not a png/jpeg!")
+		app.badRequest(w)
+
+		return
+	}
+
+	t, err := os.Create(fmt.Sprintf("%s/%s.jpg", app.conf.profile.path, uid))
+	if err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	defer t.Close()
+	t.Write(buff)
+
+	app.JSON(w, errorRes{
+		Code:    200,
+		Message: "success!",
+	})
+}
+
+func (app *application) ProfilePictureRemove(w http.ResponseWriter, r *http.Request) {
+	uid := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	img := fmt.Sprintf("%s/%s.jpg", app.conf.profile.path, uid)
+
+	if _, err := os.Stat(img); errors.Is(err, os.ErrNotExist) {
+		app.badRequest(w)
+		return
+	}
+
+	if err := os.Remove(img); err != nil {
 		app.err.Println(err)
 		app.internalError(w)
 
