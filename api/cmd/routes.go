@@ -2,14 +2,17 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httprate"
 )
 
 func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(cors.Handler(app.cors))
+	mux.Use(httprate.LimitByIP(100, 1*time.Minute))
 
 	mux.Get("/", app.Index)
 	mux.Get("/leaderboard", app.Leaderboard)

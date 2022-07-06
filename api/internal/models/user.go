@@ -202,3 +202,17 @@ func (db *DB) ProfileUpdate(bio, country, email string, playstyle, uid int) erro
 
 	return nil
 }
+
+func (db *DB) LastSeen(uid int) error {
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := db.Database.ExecContext(c, "UPDATE users SET latest_activity = UNIX_TIMESTAMP() WHERE id = ?", uid)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in LastSeen")
+		return err
+	}
+
+	return nil
+}

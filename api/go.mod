@@ -12,4 +12,9 @@ require (
 
 require golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d
 
-require github.com/golang-jwt/jwt v3.2.2+incompatible
+require (
+	github.com/go-chi/httprate v0.5.3
+	github.com/golang-jwt/jwt v3.2.2+incompatible
+)
+
+require github.com/cespare/xxhash/v2 v2.1.2 // indirect

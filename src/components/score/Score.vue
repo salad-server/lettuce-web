@@ -73,6 +73,8 @@
             <img :src="pfp" alt="Profile Picture" width="30" height="30" /> {{ score.username }}
         </router-link>
     </b>
+
+    <a :href="download" class="button">Download Replay</a>
 </template>
 
 <script lang="ts">
@@ -108,6 +110,10 @@ export default defineComponent({
             const d = moment(t);
 
             return `${d.format("DD/MM/yy - hh:mm.ssa")} (${d.fromNow()})`;
+        },
+
+        download() {
+            return `${config.cho}/get_replay?id=${this.score.id}&include_headers=true`;
         },
     },
 
@@ -148,5 +154,21 @@ table {
     color: #fff;
     width: 80%;
     margin: auto;
+}
+
+.button {
+    background: transparent;
+    color: #fff;
+    font-weight: bolder;
+}
+
+.button:hover {
+    color: #000 !important;
+    background: #fff;
+}
+
+.button:active {
+    position: relative;
+    top: 3px;
 }
 </style>

@@ -23,7 +23,6 @@
     </div>
 
     <div class="outer-buttons">
-        <!-- TODO: Play button -->
         <button class="button play" @click="togglePlay()">
             {{ playing ? "Stop" : "Play" }}
         </button>
@@ -78,6 +77,12 @@ export default defineComponent({
                 return;
             }
 
+            this.audio.pause();
+        },
+    },
+
+    watch: {
+        $route() {
             this.audio.pause();
         },
     },

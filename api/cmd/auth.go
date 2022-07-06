@@ -54,6 +54,10 @@ func (app *application) AuthLogin(req loginRequest) (string, error) {
 		return "", err
 	}
 
+	if err := app.DB.LastSeen(session.ID); err != nil {
+		app.err.Println("Could not update last seen:", err)
+	}
+
 	return token, nil
 }
 
