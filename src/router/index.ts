@@ -24,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
 
     {
         path: "/:notFound(.*)",
+        name: "404 Page not found!",
         component: NotFound,
     },
 ];

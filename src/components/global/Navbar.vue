@@ -63,8 +63,8 @@
                             Settings
                         </router-link>
 
-                        <router-link class="navbar-item" to="/profile">
-                            Friends
+                        <router-link class="navbar-item" to="/profile/picture">
+                            Profile Picture
                         </router-link>
 
                         <hr class="navbar-divider" />
