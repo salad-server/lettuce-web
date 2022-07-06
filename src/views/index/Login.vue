@@ -102,7 +102,10 @@ export default defineComponent({
             if (res.status != 200) {
                 Swal.fire({
                     title: "Unauthorized!",
-                    text: "Double check your inputs?",
+                    text:
+                        res.status == 403
+                            ? "You've been banned."
+                            : "Double check your inputs?",
                     icon: "question",
                 });
 

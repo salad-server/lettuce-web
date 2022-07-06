@@ -69,8 +69,6 @@
 import { defineComponent } from "vue";
 import moment from "moment";
 
-// TODO: Download replay
-
 export default defineComponent({
     props: ["beatmap", "mode"],
     computed: {

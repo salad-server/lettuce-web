@@ -280,6 +280,16 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 	token, err := app.AuthLogin(res)
 
 	if err != nil {
+		if errors.Is(err, errBanned) {
+			w.WriteHeader(http.StatusForbidden)
+			app.JSON(w, errorRes{
+				Code:    403,
+				Message: "You are restricted/banned!",
+			})
+
+			return
+		}
+
 		app.unauthorized(w)
 		return
 	}

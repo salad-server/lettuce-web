@@ -1,7 +1,8 @@
 import { createStore } from "vuex";
 import { AuthInfo, AuthUser } from "@/types/user";
+import Swal from "sweetalert2";
 
-// TODO: Auto logout
+let timer = 0;
 
 export default createStore({
     state: {
@@ -25,6 +26,24 @@ export default createStore({
             state.token = token;
 
             localStorage.setItem("token", token);
+
+            // every minute, check if user's session has expired
+            timer = setInterval(() => {
+                if (Math.floor(Date.now() / 1000) > state.expire) {
+                    Swal.fire({
+                        title: "Unauthorized!",
+                        text: "Double check your inputs?",
+                        icon: "question",
+                    });
+
+                    setTimeout(() => {
+                        // eslint-disable-next-line
+                        (this as any).commit("logout");
+                    }, 2000);
+
+                    clearInterval(timer);
+                }
+            }, 60000);
         },
 
         logout(state) {

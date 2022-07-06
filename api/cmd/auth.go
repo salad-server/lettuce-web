@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var errBanned = errors.New("restricted/banned")
 
 type UserClaims struct {
 	User string `json:"user"`
@@ -33,17 +36,20 @@ func (app *application) AuthLogin(req loginRequest) (string, error) {
 	session, err := app.DB.UserSession(req.Email)
 	js, jerr := json.Marshal(session)
 
-	// TODO: Check if privilege is not restricted/banned.
 	if err != nil || jerr != nil {
 		app.err.Println(err)
 		return "", err
+	}
+
+	if session.Priv&1 == 0 {
+		return "", errBanned
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
 		string(js),
 		jwt.StandardClaims{
 			Issuer:    strconv.Itoa(session.ID),
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 10).Unix(),
 		},
 	})
 
