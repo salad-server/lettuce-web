@@ -75,7 +75,7 @@
                 </div>
                 <div class="navbar-item" v-else>
                     <div class="buttons">
-                        <a class="button is-primary">
+                        <a href="/info/register" class="button is-primary">
                             <strong>Sign up</strong>
                         </a>
                         <router-link to="/login" class="button is-light">

@@ -20,7 +20,7 @@
                         </router-link>
 
                         <router-link
-                            to="/register"
+                            to="/info/register"
                             class="button is-medium is-info is-outlined"
                         >
                             Register
