@@ -31,3 +31,24 @@ export interface Info {
 
     code?: number;
 }
+
+export interface AuthUser {
+    user: AuthInfo;
+    exp: number;
+    iss: string;
+}
+
+export interface AuthInfo {
+    username: string;
+    id: number;
+    priv: number;
+}
+
+export interface ProfileSettings {
+    bio: string;
+    country: string;
+    playstyle: number;
+    email: string;
+
+    code?: number;
+}

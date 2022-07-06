@@ -45,12 +45,42 @@
             </div>
 
             <div class="navbar-end">
-                <div class="navbar-item">
+                <div
+                    class="navbar-item has-dropdown is-hoverable"
+                    v-if="$store.getters.loggedIn"
+                >
+                    <router-link :to="prof" class="navbar-link">
+                        <img
+                            class="avatar"
+                            :src="`${avatar}/${$store.state.id}`"
+                        />
+
+                        {{ $store.state.username }}
+                    </router-link>
+
+                    <div class="navbar-dropdown">
+                        <router-link class="navbar-item" to="/profile">
+                            Settings
+                        </router-link>
+
+                        <router-link class="navbar-item" to="/profile/picture">
+                            Profile Picture
+                        </router-link>
+
+                        <hr class="navbar-divider" />
+                        <a class="navbar-item" @click="$store.commit('logout')">
+                            Log out
+                        </a>
+                    </div>
+                </div>
+                <div class="navbar-item" v-else>
                     <div class="buttons">
-                        <a class="button is-primary">
+                        <a href="/info/register" class="button is-primary">
                             <strong>Sign up</strong>
                         </a>
-                        <a class="button is-light"> Log in </a>
+                        <router-link to="/login" class="button is-light">
+                            Log in
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -73,6 +103,20 @@ export default defineComponent({
         source() {
             return config.source;
         },
+
+        avatar() {
+            return config.avatar;
+        },
+
+        prof() {
+            return "/profile/" + this.$store.state.id;
+        },
     },
 });
 </script>
+
+<style scoped>
+.avatar {
+    margin-right: 15px;
+}
+</style>

@@ -16,12 +16,18 @@ import (
 const version = "1.0.0"
 
 type config struct {
-	port int
-	env  string
-	docs string
-	cors []string
-	db   struct {
+	port   int
+	env    string
+	docs   string
+	secret string
+	cors   []string
+	db     struct {
 		dsn string
+	}
+
+	profile struct {
+		path string
+		max  int64
 	}
 }
 
@@ -51,10 +57,15 @@ func (app *application) serve() error {
 func main() {
 	c := loadConfig()
 	cfg := config{
-		port: c.Port,
-		env:  c.Mode,
-		docs: c.Docs,
-		cors: c.Cors,
+		port:   c.Port,
+		env:    c.Mode,
+		docs:   c.Docs,
+		secret: c.Secret,
+		cors:   c.Cors,
+		profile: struct{path string; max int64}{
+			path: c.ProfilePath,
+			max: c.ProfileMax,
+		},
 	}
 
 	cfg.db.dsn = c.DSN
@@ -75,7 +86,7 @@ func main() {
 		cors: cors.Options{
 			AllowedOrigins:   cfg.cors,
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "Token"},
 			AllowCredentials: false,
 			MaxAge:           300,
 		},

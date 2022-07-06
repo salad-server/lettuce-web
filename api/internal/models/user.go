@@ -41,6 +41,19 @@ type Info struct {
 	Bio          string `json:"bio"`
 }
 
+type Session struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Priv     int    `json:"priv"`
+}
+
+type Userpage struct {
+	Bio       string `json:"bio"`
+	Country   string `json:"country"`
+	Playstyle int    `json:"playstyle"`
+	Email     string `json:"email"`
+}
+
 func (db *DB) UserStats(uid int, mode string) (Stats, error) {
 	m := scores.Modes[mode]
 	q := `
@@ -113,4 +126,79 @@ func (db *DB) UserInfo(uid int) (Info, error) {
 
 	info.FavMode = scores.ConvertMode(info.FavMode)
 	return info, nil
+}
+
+func (db *DB) UserCreds(email string) (string, error) {
+	var pw string
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT pw_bcrypt FROM users WHERE email = ?", email)
+
+	defer cancel()
+
+	if err := res.Scan(&pw); err != nil {
+		log.Println("Error in UserCreds")
+		return "", err
+	}
+
+	return pw, nil
+}
+
+func (db *DB) UserSession(email string) (Session, error) {
+	var session Session
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT id, name, priv FROM users WHERE email = ?", email)
+
+	defer cancel()
+
+	if err := res.Scan(
+		&session.ID,
+		&session.Username,
+		&session.Priv,
+	); err != nil {
+		log.Println("Error in UserSession")
+		return session, err
+	}
+
+	return session, nil
+}
+
+func (db *DB) ProfileEdit(uid int) (Userpage, error) {
+	var page Userpage
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT COALESCE(userpage_content, ''), country, play_style, email FROM users WHERE id = ?", uid)
+
+	defer cancel()
+
+	if err := res.Scan(
+		&page.Bio,
+		&page.Country,
+		&page.Playstyle,
+		&page.Email,
+	); err != nil {
+		log.Println("Error in ProfileEdit")
+		return page, err
+	}
+
+	return page, nil
+}
+
+func (db *DB) ProfileUpdate(bio, country, email string, playstyle, uid int) error {
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := db.Database.ExecContext(c, `
+		UPDATE users SET
+			userpage_content = ?,
+			country = ?,
+			email = ?,
+			play_style = ?
+		WHERE id = ?
+	`, bio, country, email, playstyle, uid)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in ProfileUpdate")
+		return err
+	}
+
+	return nil
 }

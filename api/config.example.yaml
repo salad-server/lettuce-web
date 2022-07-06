@@ -4,8 +4,15 @@ PORT: 8081 # API Port. Make sure this matches your nginx!
 # Environment mode (development | production)
 MODE: development
 
+# JWT Secret (you can generate one here: https://www.grc.com/passwords.htm)
+SECRET: hello-world
+
 # Relative directory for documentation
 DOCS: ../docs
+
+# Profile photo options
+PFP_PATH: /home/username/example/bancho.py/.data/avatars # path to server's avatars
+PFP_MAX: 1000000 # Profile photo size limit in bytes
 
 # Cors options
 CORS:

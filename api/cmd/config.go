@@ -9,11 +9,14 @@ import (
 )
 
 type yamlConf struct {
-	Port int      `yaml:"PORT,omitempty"`
-	DSN  string   `yaml:"DSN,omitempty"`
-	Mode string   `yaml:"MODE,omitempty"`
-	Docs string   `yaml:"DOCS,omitempty"`
-	Cors []string `yaml:"CORS,omitempty"`
+	Port        int      `yaml:"PORT,omitempty"`
+	DSN         string   `yaml:"DSN,omitempty"`
+	Mode        string   `yaml:"MODE,omitempty"`
+	Docs        string   `yaml:"DOCS,omitempty"`
+	Secret      string   `yaml:"SECRET,omitempty"`
+	ProfilePath string   `yaml:"PFP_PATH,omitempty"`
+	ProfileMax  int64    `yaml:"PFP_MAX,omitempty"`
+	Cors        []string `yaml:"CORS,omitempty"`
 }
 
 type devResponse struct {
