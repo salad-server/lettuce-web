@@ -74,17 +74,33 @@
         </router-link>
     </b>
 
-    <a :href="download" class="button">Download Replay</a>
+    <div class="buttons">
+        <a :href="download" class="button">Download Replay</a>
+        <button v-if="myScore" class="button" @click="pin">
+            {{ pinned ? "Unpin" : "Pin" }} Score
+        </button>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { SimpleResponse } from "@/types/general";
+
 import * as m from "@/util/mods";
+import * as alert from "@/util/error";
+
 import moment from "moment";
+import Swal from "sweetalert2";
 import config from "../../../config.json";
 
 export default defineComponent({
     props: ["score"],
+    data() {
+        return {
+            pinned: this.score.pinned,
+        };
+    },
+
     computed: {
         prof() {
             const mm = this.score.play_mode.split("!");
@@ -115,11 +131,48 @@ export default defineComponent({
         download() {
             return `${config.cho}/get_replay?id=${this.score.id}&include_headers=true`;
         },
+
+        myScore() {
+            return this.score.uid === this.$store.state.id;
+        },
     },
 
     methods: {
         comma: (n: number) =>
             n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+
+        async pin() {
+            const res: SimpleResponse = await fetch(
+                `${config.api}/@me/pinned?s=${this.score.id}`,
+                {
+                    method: this.pinned ? "DELETE" : "POST",
+                    headers: {
+                        Token: this.$store.state.token,
+                    },
+                }
+            )
+                .then((j) => j.json())
+                .catch(() => {
+                    alert.API();
+                });
+
+            if (!res) return;
+            if (res.code == 200) {
+                Swal.fire({
+                    title: "Success!",
+                    text: `${this.pinned ? "Unpinned" : "Pinned"} score.`,
+                    icon: "success",
+                });
+
+                this.pinned = !this.pinned;
+            } else {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Only passed scores can be pinned/unpinned.",
+                    icon: "error",
+                });
+            }
+        },
     },
 });
 </script>

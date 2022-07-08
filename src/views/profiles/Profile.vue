@@ -32,6 +32,15 @@
                         <p>{{ info.bio }}</p>
                     </div>
 
+                    <div v-if="pinned.length">
+                        <div class="divider">Pinned Scores</div>
+                        <Scores
+                            :data="pinned"
+                            @clicked="loadPinned()"
+                            :mode="mode"
+                        />
+                    </div>
+
                     <div>
                         <div class="divider">Best Scores</div>
                         <Scores
@@ -99,11 +108,13 @@ export default defineComponent({
 
             best: [] as Score[],
             recent: [] as Score[],
+            pinned: [] as Score[],
             stats: {} as UserStats,
             info: {} as UserInfo,
             page: {
                 best: 0,
                 recent: 0,
+                pinned: 0,
             },
 
             disabled: {
@@ -193,15 +204,33 @@ export default defineComponent({
             }
         },
 
+        async loadPinned() {
+            // prettier-ignore
+            const pinned: Score[] = await fetch(`${config.api}/users/${this.id}/pinned?m=${this.mod}!${this.mode}&p=${this.page.pinned++}`).then((j) => j.json()).catch(() => {
+                alert.API();
+            });
+
+            const ids = this.pinned.map((i) => i.id);
+
+            for (const score of pinned) {
+                if (!ids.includes(score.id)) {
+                    this.pinned.push(score);
+                }
+            }
+        },
+
         updateEverything() {
             this.page.best = 0;
             this.page.recent = 0;
+            this.page.pinned = 0;
+
             this.best = [];
             this.recent = [];
 
             this.loadStats();
             this.loadBest();
             this.loadRecent();
+            this.loadPinned();
         },
 
         // ui

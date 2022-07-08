@@ -40,6 +40,7 @@ export interface AdvancedScore {
     map: AdvancedBeatmap;
 
     code?: number;
+    pinned?: number;
 }
 export interface AdvancedBeatmap {
     title: string;

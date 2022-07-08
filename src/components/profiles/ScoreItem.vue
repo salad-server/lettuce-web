@@ -21,11 +21,10 @@
                     {{ comma(score.combo) }}x
                 </span>
 
-                <span v-if="showMap">
-                    <span> | </span>
-                    <span :class="status">{{ score.map.status }}</span>
-                    <span v-if="showStatus"> / Unsubmitted </span>
+                <span v-if="showMap" :class="status">
+                    | {{ score.map.status }}
                 </span>
+                <span v-if="showStatus"> | Unsubmitted </span>
             </div>
             <div class="td-m-s">
                 + {{ modsTxt }} ({{ score.acc.toFixed(2) }}%)

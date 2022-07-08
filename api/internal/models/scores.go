@@ -351,7 +351,7 @@ func (db *DB) GetPinned(uid, page int, mode string) ([]Score, error) {
 		JOIN maps m ON s.map_md5 = m.md5
 		JOIN users u ON s.userid = u.id
 		WHERE s.userid = ? AND s.mode = ? AND u.priv & 1
-		ORDER BY s.id DESC
+		ORDER BY p.pintime DESC
 		LIMIT ?, 10
 	`
 
