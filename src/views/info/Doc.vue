@@ -1,7 +1,7 @@
 <template>
     <Loading v-if="loading" />
-    <Error v-else-if="error" :msg="errorMsg" />
-    <div class="columns is-mobile is-centered mt-2">
+    <Error v-else-if="error" :code="errCode" :msg="errorMsg" />
+    <div v-else class="columns is-mobile is-centered mt-2">
         <div class="column dcard is-2">
             <div class="content" v-html="tohtml"></div>
         </div>
@@ -26,6 +26,7 @@ export default defineComponent({
             loading: true,
             error: false,
             errorMsg: "",
+            errCode: 0,
             md: "",
         };
     },
@@ -42,6 +43,7 @@ export default defineComponent({
             .catch(() => {
                 this.error = true;
                 this.errorMsg = "Documentation not found!";
+                this.errCode = 404;
             });
 
         this.loading = false;

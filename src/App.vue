@@ -1,6 +1,10 @@
 <template>
     <Navbar />
-    <router-view />
+    <router-view v-slot="{ Component }">
+        <transition name="router" mode="out-in">
+            <component :is="Component"></component>
+        </transition>
+    </router-view>
 </template>
 
 <script lang="ts">
@@ -65,5 +69,15 @@ export default defineComponent({
 
 .enabled {
     color: red;
+}
+</style>
+
+<style scoped>
+.router-enter-from {
+    opacity: 0;
+}
+
+.router-enter-active {
+    transition: all 0.3s ease-out;
 }
 </style>

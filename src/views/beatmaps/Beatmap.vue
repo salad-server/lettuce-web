@@ -35,7 +35,7 @@
             <h3 v-else>No leaderboard available for this map!</h3>
         </div>
     </div>
-    <Error v-else :msg="errorMsg" />
+    <Error v-else :code="errCode" :msg="errorMsg" />
 </template>
 
 <script lang="ts">
@@ -62,6 +62,7 @@ export default defineComponent({
             loading: true,
             error: false,
             errorMsg: "",
+            errCode: 0,
         };
     },
 
@@ -76,12 +77,15 @@ export default defineComponent({
             const res = await fetch(`${config.api}/beatmap/${this.id}/sets`).then((j) => j.json()).catch(() => {
                 this.error = true;
                 this.errorMsg = "Could not load map!";
+                this.errCode = 500;
             });
 
             if (!res) return;
             if (res?.code == 400 || res.length <= 0) {
                 this.error = true;
                 this.errorMsg = "Beatmap not found!";
+                this.errCode = 404;
+
                 return;
             }
 

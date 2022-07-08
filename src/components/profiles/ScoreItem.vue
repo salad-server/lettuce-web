@@ -21,8 +21,8 @@
                     {{ comma(score.combo) }}x
                 </span>
 
-                <span v-if="showMap" :class="status">
-                    | {{ score.map.status }}
+                <span v-if="showMap">
+                    | <span :class="status">{{ score.map.status }}</span>
                 </span>
                 <span v-if="showStatus"> | Unsubmitted </span>
             </div>

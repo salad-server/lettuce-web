@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-    <Error v-else :msg="errorMsg" />
+    <Error v-else :code="errCode" :msg="errorMsg" />
 </template>
 
 <script lang="ts">
@@ -124,6 +124,7 @@ export default defineComponent({
 
             error: false,
             errorMsg: "",
+            errCode: 0,
         };
     },
 
@@ -135,6 +136,7 @@ export default defineComponent({
             this.loading = false;
             this.error = true;
             this.errorMsg = "Invalid mode/mod combo!";
+            this.errCode = 400;
 
             return;
         }
@@ -153,12 +155,15 @@ export default defineComponent({
             const res: UserInfo = await fetch(`${config.api}/users/${this.id}`).then((j) => j.json()).catch(() => {
                 this.error = true;
                 this.errorMsg = "Error loading profile!";
+                this.errCode = 500;
             });
 
             if (!res) return;
             if (res.id == 0 || [400, 500].includes(res?.code || 0)) {
                 this.error = true;
                 this.errorMsg = "Profile not found!";
+                this.errCode = 404;
+
                 return;
             }
 

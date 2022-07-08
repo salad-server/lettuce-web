@@ -1,5 +1,5 @@
 <template>
-    <Error v-if="error" :msg="errorMsg" />
+    <Error v-if="error" :code="errCode" :msg="errorMsg" />
     <div v-else class="columns is-centered">
         <div class="column dcard is-8 has-text-centered">
             <div class="my-5">
@@ -98,6 +98,7 @@ export default defineComponent({
 
             error: false,
             errorMsg: "",
+            errCode: 0,
         };
     },
 
@@ -108,6 +109,8 @@ export default defineComponent({
             this.loading = false;
             this.error = true;
             this.errorMsg = "Invalid gamemode!";
+            this.errCode = 400;
+
             return;
         }
 

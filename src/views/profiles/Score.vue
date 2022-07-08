@@ -12,7 +12,7 @@
             </div>
         </div>
     </div>
-    <Error v-else :msg="errorMsg" />
+    <Error v-else :code="errCode" :msg="errorMsg" />
 </template>
 
 <script lang="ts">
@@ -34,6 +34,7 @@ export default defineComponent({
             score: {} as AdvancedScore,
             error: false,
             errorMsg: "",
+            errCode: 0,
         };
     },
 
@@ -49,12 +50,14 @@ export default defineComponent({
             const res: AdvancedScore = await fetch(`${config.api}/score/${this.id}`).then(j => j.json()).catch(() => {
                 this.error = true;
                 this.errorMsg = "Error loading score!";
+                this.errCode = 500;
             });
 
             if (!res) return;
             if (res.id == 0 || [400, 500].includes(res?.code || 0)) {
                 this.error = true;
                 this.errorMsg = "Score could not be located! Check ID?";
+                this.errCode = 400;
             }
 
             this.score = res;
