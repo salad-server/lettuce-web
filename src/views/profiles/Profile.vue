@@ -156,9 +156,8 @@ export default defineComponent({
 
         async loadStats() {
             // prettier-ignore
-            const res: UserStats = await fetch(`${config.api}/users/${this.id}/stats?m=${this.mod}!${this.mode}`).then((j) => j.json()).catch((e) => {
+            const res: UserStats = await fetch(`${config.api}/users/${this.id}/stats?m=${this.mod}!${this.mode}`).then((j) => j.json()).catch(() => {
                 alert.API();
-                console.error(e);
             });
 
             this.stats = res;
@@ -166,9 +165,8 @@ export default defineComponent({
 
         async loadBest() {
             // prettier-ignore
-            const best: Score[] = await fetch(`${config.api}/users/${this.id}/scores?m=${this.mod}!${this.mode}&b=1&p=${this.page.best++}`).then((j) => j.json()).catch((e) => {
+            const best: Score[] = await fetch(`${config.api}/users/${this.id}/scores?m=${this.mod}!${this.mode}&b=1&p=${this.page.best++}`).then((j) => j.json()).catch(() => {
                 alert.API();
-                console.error(e);
             });
 
             const ids = this.best.map((i) => i.id);
@@ -182,9 +180,8 @@ export default defineComponent({
 
         async loadRecent() {
             // prettier-ignore
-            const recent: Score[] = await fetch(`${config.api}/users/${this.id}/scores?m=${this.mod}!${this.mode}&b=0&p=${this.page.recent++}`).then((j) => j.json()).catch((e) => {
+            const recent: Score[] = await fetch(`${config.api}/users/${this.id}/scores?m=${this.mod}!${this.mode}&b=0&p=${this.page.recent++}`).then((j) => j.json()).catch(() => {
                 alert.API();
-                console.error(e);
             });
 
             const ids = this.recent.map((i) => i.id);

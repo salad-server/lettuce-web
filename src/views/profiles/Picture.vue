@@ -129,7 +129,6 @@ export default defineComponent({
 
         updatePreview(e: Event) {
             const input = e.target as HTMLInputElement;
-            console.log(2);
 
             if (input.files) {
                 this.preview = URL.createObjectURL(input.files[0]);

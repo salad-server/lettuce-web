@@ -199,7 +199,10 @@ export default defineComponent({
             if (res?.code != 200) {
                 Swal.fire({
                     title: "Invalid request!",
-                    text: "Double check your inputs?",
+                    text:
+                        res.code == 409
+                            ? "Email is already in use!"
+                            : "Double check your inputs?",
                     icon: "error",
                 });
 
