@@ -281,7 +281,9 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if errors.Is(err, errBanned) {
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusForbidden)
+
 			app.JSON(w, simpleResp{
 				Code:    403,
 				Message: "You are restricted/banned!",
@@ -346,7 +348,9 @@ func (app *application) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if app.DB.EmailExists(uid, res.Email) {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
+
 		app.JSON(w, simpleResp{
 			Code:    409,
 			Message: "email is already in use!",
@@ -362,10 +366,7 @@ func (app *application) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.JSON(w, simpleResp{
-		Code:    200,
-		Message: "success!",
-	})
+	app.success(w)
 }
 
 func (app *application) ProfilePicture(w http.ResponseWriter, r *http.Request) {
@@ -405,12 +406,9 @@ func (app *application) ProfilePicture(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer t.Close()
-	t.Write(buff)
 
-	app.JSON(w, simpleResp{
-		Code:    200,
-		Message: "success!",
-	})
+	t.Write(buff)
+	app.success(w)
 }
 
 func (app *application) ProfilePictureRemove(w http.ResponseWriter, r *http.Request) {
@@ -429,8 +427,120 @@ func (app *application) ProfilePictureRemove(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	app.JSON(w, simpleResp{
-		Code:    200,
-		Message: "success!",
-	})
+	app.success(w)
+}
+
+func (app *application) Pinned(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	uid, ierr := strconv.Atoi(id)
+	page, perr := strconv.Atoi(r.FormValue("p"))
+	mode := r.FormValue("m")
+
+	badParams := (ierr != nil || perr != nil)
+	badArgs := (uid <= -1 || page <= -1)
+
+	if badParams || badArgs || !scores.ValidGamemode(mode) {
+		app.badRequest(w)
+		return
+	}
+
+	res, err := app.DB.GetPinned(uid, page, mode)
+
+	if err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.JSON(w, res)
+}
+
+func (app *application) Pin(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	sid, err := strconv.Atoi(r.FormValue("s"))
+	uid, _ := strconv.Atoi(id)
+
+	if err != nil {
+		app.badRequest(w)
+		return
+	}
+
+	if !app.DB.ScoreExists(uid, sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		app.JSON(w, simpleResp{
+			Code:    404,
+			Message: "score does not exist!",
+		})
+
+		return
+	}
+
+	if app.DB.PinnedExists(sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+
+		app.JSON(w, simpleResp{
+			Code:    409,
+			Message: "score is already pinned!",
+		})
+
+		return
+	}
+
+	if err := app.DB.PinScore(sid); err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.success(w)
+}
+
+func (app *application) Unpin(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	sid, err := strconv.Atoi(r.FormValue("s"))
+	uid, _ := strconv.Atoi(id)
+
+	if err != nil {
+		app.badRequest(w)
+		return
+	}
+
+	// ensure we own the score and we aren't restricted
+	if !app.DB.ScoreExists(uid, sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		app.JSON(w, simpleResp{
+			Code:    404,
+			Message: "score does not exist!",
+		})
+
+		return
+	}
+
+	if !app.DB.PinnedExists(sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+
+		app.JSON(w, simpleResp{
+			Code:    409,
+			Message: "score isn't pinned!",
+		})
+
+		return
+	}
+
+	if err := app.DB.UnpinScore(sid); err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.success(w)
 }

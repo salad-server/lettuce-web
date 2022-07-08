@@ -79,6 +79,11 @@ type AdvancedScore struct {
 	} `json:"map"`
 }
 
+type ScoreInfoResponse struct {
+	AdvancedScore
+	Pinned bool `json:"pinned"`
+}
+
 type Records struct {
 	Score AdvancedScore `json:"score"`
 	PP    AdvancedScore `json:"pp"`
@@ -158,7 +163,7 @@ func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) 
 	return all_scores, nil
 }
 
-func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
+func (db *DB) ScoreInfo(uid int) (ScoreInfoResponse, error) {
 	q := `
 		SELECT
 			s.id, s.userid, u.name, s.score, s.pp, s.acc, s.max_combo, s.mods,
@@ -173,7 +178,7 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 		WHERE s.id = ? AND u.priv & 1
 	`
 
-	var score AdvancedScore
+	var score ScoreInfoResponse
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	res := db.Database.QueryRowContext(c, q, uid)
 
@@ -222,6 +227,8 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 
 	score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
 	score.Mode = scores.ConvertMode(score.Mode)
+	score.Pinned = db.PinnedExists(score.ID)
+
 	return score, nil
 }
 
@@ -329,4 +336,104 @@ func (db *DB) Records() (map[string]Records, error) {
 	}
 
 	return records, nil
+}
+
+func (db *DB) GetPinned(uid, page int, mode string) ([]Score, error) {
+	m := scores.Modes[mode]
+	q := `
+		SELECT
+			s.id, s.map_md5, s.score, s.pp, s.acc, s.max_combo, s.mods,
+			s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, 
+			s.status, s.play_time, s.perfect, m.title, m.version,
+			m.set_id, m.id, m.status
+		FROM pinned p
+		JOIN scores s ON s.id = p.id
+		JOIN maps m ON s.map_md5 = m.md5
+		JOIN users u ON s.userid = u.id
+		WHERE s.userid = ? AND s.mode = ? AND u.priv & 1
+		ORDER BY s.id DESC
+		LIMIT ?, 10
+	`
+
+	var pinned []Score
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	row, err := db.Database.QueryContext(c, q, uid, m, page*PAGE_LEN)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in GetPinned")
+		return nil, err
+	}
+
+	for row.Next() {
+		var score Score
+
+		if err := row.Scan(
+			&score.ID,
+			&score.Map.MD5,
+			&score.Score,
+			&score.PP,
+			&score.Acc,
+			&score.MaxCombo,
+			&score.Mods,
+			&score.Count300,
+			&score.Count100,
+			&score.Count50,
+			&score.Miss,
+			&score.Geki,
+			&score.Katu,
+			&score.Grade,
+			&score.Status,
+			&score.Date,
+			&score.Perfect,
+			&score.Map.Title,
+			&score.Map.Version,
+			&score.Map.SetID,
+			&score.Map.MapID,
+			&score.Map.MapStatus,
+		); err != nil {
+			log.Println("Error in GetPinned")
+			return nil, err
+		}
+
+		score.Map.MapStatus = scores.ConvertStatus(score.Map.MapStatus)
+		pinned = append(pinned, score)
+	}
+
+	return pinned, nil
+}
+
+func (db *DB) ScoreExists(uid, sid int) bool {
+	var score bool
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, `
+		SELECT 1 FROM scores s
+		JOIN users u ON s.userid = u.id
+		WHERE s.id = ? AND s.userid = ? AND u.priv & 1 AND s.status != 0
+	`, sid, uid)
+
+	defer cancel()
+
+	if err := res.Scan(&score); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in ScoreExists")
+		return false
+	}
+
+	return score
+}
+
+func (db *DB) PinnedExists(id int) bool {
+	var pinned bool
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT 1 FROM pinned WHERE id = ?", id)
+
+	defer cancel()
+
+	if err := res.Scan(&pinned); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in PinnedExists")
+		return false
+	}
+
+	return pinned
 }

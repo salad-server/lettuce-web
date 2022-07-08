@@ -19,11 +19,12 @@ func (app *application) routes() http.Handler {
 
 	// auth
 	mux.Post("/login", app.Login)
-	// mux.Post("/register", app.Register)
-
 	mux.Route("/@me", func(r chi.Router) {
 		r.Use(app.IsAuthed)
 		r.Get("/", app.WhoAmI)
+
+		r.Post("/pinned", app.Pin)
+		r.Delete("/pinned", app.Unpin)
 
 		r.Get("/profile", app.GetProfile)
 		r.Post("/profile", app.UpdateProfile)
@@ -41,6 +42,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/users/{id}", app.Info)
 	mux.Get("/users/{id}/scores", app.Scores)
 	mux.Get("/users/{id}/stats", app.Stats)
+	mux.Get("/users/{id}/pinned", app.Pinned)
 
 	// scores
 	mux.Get("/score", app.Records)

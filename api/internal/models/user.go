@@ -221,14 +221,42 @@ func (db *DB) LastSeen(uid int) error {
 func (db *DB) EmailExists(uid int, email string) bool {
 	var mail bool
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	res := db.Database.QueryRowContext(c, "SELECT COUNT(1) FROM users WHERE email = ? AND id != ?", email, uid)
+	res := db.Database.QueryRowContext(c, "SELECT 1 FROM users WHERE email = ? AND id != ?", email, uid)
 
 	defer cancel()
 
-	if err := res.Scan(&mail); err != nil {
+	if err := res.Scan(&mail); err != nil && err != sql.ErrNoRows {
 		log.Println("Error in EmailExists")
 		return true
 	}
 
 	return mail
+}
+
+func (db *DB) PinScore(id int) error {
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := db.Database.ExecContext(c, "INSERT INTO pinned VALUES (?, UNIX_TIMESTAMP())", id)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in PinScore")
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) UnpinScore(id int) error {
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := db.Database.ExecContext(c, "DELETE FROM pinned WHERE id = ?", id)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in UnpinScore")
+		return err
+	}
+
+	return nil
 }

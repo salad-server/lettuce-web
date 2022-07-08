@@ -90,6 +90,16 @@ func (app *application) unauthorized(w http.ResponseWriter) {
 	})
 }
 
+func (app *application) success(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	app.JSON(w, simpleResp{
+		Code:    200,
+		Message: "success!",
+	})
+}
+
 func (app *application) JSON(w http.ResponseWriter, jdata any) {
 	j, err := json.Marshal(jdata)
 
