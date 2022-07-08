@@ -84,8 +84,6 @@ type Records struct {
 	PP    AdvancedScore `json:"pp"`
 }
 
-// TODO: Disable results for restricted/banned users
-// TODO: Treat restricted users as banned
 // TODO: Cache record with redis. This query is brutal
 
 func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) {
@@ -106,7 +104,8 @@ func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) 
 			m.set_id, m.id, m.status
 		FROM scores s
 		INNER JOIN maps m ON s.map_md5 = m.md5
-		WHERE s.userid = ? AND s.mode = ? %s
+		INNER JOIN users u ON s.userid = u.id
+		WHERE s.userid = ? AND s.mode = ? AND u.priv & 1 %s
 		ORDER BY %s DESC LIMIT ?, 10
 	`, ranked, sort)
 
@@ -171,7 +170,7 @@ func (db *DB) ScoreInfo(uid int) (AdvancedScore, error) {
 		FROM scores s
 		JOIN maps m ON s.map_md5 = m.md5
 		JOIN users u ON s.userid = u.id
-		WHERE s.id = ?
+		WHERE s.id = ? AND u.priv & 1
 	`
 
 	var score AdvancedScore
@@ -238,7 +237,7 @@ func (db *DB) Records() (map[string]Records, error) {
 		FROM scores s
 		JOIN maps m ON s.map_md5 = m.md5
 		JOIN users u ON s.userid = u.id
-		WHERE s.mode = ? AND m.status IN (2, 3, 4) AND s.status = 2
+		WHERE s.mode = ? AND m.status IN (2, 3, 4) AND s.status = 2 AND u.priv & 1
 		ORDER BY %s DESC LIMIT 1
 	`
 

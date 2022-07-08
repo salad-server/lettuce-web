@@ -282,7 +282,7 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, errBanned) {
 			w.WriteHeader(http.StatusForbidden)
-			app.JSON(w, errorRes{
+			app.JSON(w, simpleResp{
 				Code:    403,
 				Message: "You are restricted/banned!",
 			})
@@ -345,6 +345,16 @@ func (app *application) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if app.DB.EmailExists(uid, res.Email) {
+		w.WriteHeader(http.StatusConflict)
+		app.JSON(w, simpleResp{
+			Code:    409,
+			Message: "email is already in use!",
+		})
+
+		return
+	}
+
 	if err := app.DB.ProfileUpdate(res.Bio, res.Country, res.Email, res.Playstyle, uid); err != nil {
 		app.err.Println(err)
 		app.internalError(w)
@@ -352,7 +362,7 @@ func (app *application) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.JSON(w, errorRes{
+	app.JSON(w, simpleResp{
 		Code:    200,
 		Message: "success!",
 	})
@@ -397,7 +407,7 @@ func (app *application) ProfilePicture(w http.ResponseWriter, r *http.Request) {
 	defer t.Close()
 	t.Write(buff)
 
-	app.JSON(w, errorRes{
+	app.JSON(w, simpleResp{
 		Code:    200,
 		Message: "success!",
 	})
@@ -419,7 +429,7 @@ func (app *application) ProfilePictureRemove(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	app.JSON(w, errorRes{
+	app.JSON(w, simpleResp{
 		Code:    200,
 		Message: "success!",
 	})

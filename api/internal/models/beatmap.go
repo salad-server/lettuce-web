@@ -163,7 +163,7 @@ func (db *DB) BeatmapLeaderboard(bid, page int, mode string) ([]MapScore, error)
 		FROM scores s
 		JOIN users u ON u.id = s.userid
 		JOIN maps m ON s.map_md5 = m.md5
-		WHERE m.id = ? AND s.mode = ? AND s.status = 2
+		WHERE m.id = ? AND s.mode = ? AND s.status = 2 AND u.priv & 1
 		ORDER BY score DESC LIMIT ?, 10
 	`
 

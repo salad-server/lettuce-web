@@ -35,7 +35,7 @@ func (db *DB) Leaderboard(pp bool, mode string, page int) ([]PlayerRanking, erro
 			s.rscore, s.tscore, s.plays, s.acc
 		FROM users u
 		JOIN stats s ON u.id = s.id
-		WHERE s.mode = ?
+		WHERE s.mode = ? AND u.priv & 1
 		ORDER BY %s DESC
 		LIMIT ?, 10
 	`, o)

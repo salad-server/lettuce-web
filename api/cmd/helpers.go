@@ -55,7 +55,7 @@ var countries = []string{
 	"ye", "yt", "za", "zm", "zw", "xx",
 }
 
-type errorRes struct {
+type simpleResp struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
@@ -64,7 +64,7 @@ func (app *application) badRequest(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
 
-	app.JSON(w, errorRes{
+	app.JSON(w, simpleResp{
 		Code:    400,
 		Message: "Bad request!",
 	})
@@ -74,7 +74,7 @@ func (app *application) internalError(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
 
-	app.JSON(w, errorRes{
+	app.JSON(w, simpleResp{
 		Code:    500,
 		Message: "Internal server error!",
 	})
@@ -84,7 +84,7 @@ func (app *application) unauthorized(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusUnauthorized)
 
-	app.JSON(w, errorRes{
+	app.JSON(w, simpleResp{
 		Code:    401,
 		Message: "Unauthorized!",
 	})

@@ -58,11 +58,12 @@ func (db *DB) UserStats(uid int, mode string) (Stats, error) {
 	m := scores.Modes[mode]
 	q := `
 		SELECT
-			id, tscore, rscore, pp, plays,
-			acc, max_combo, total_hits, replay_views,
-			xh_count, x_count, sh_count, s_count, a_count
-		FROM stats
-		WHERE id = ? AND mode = ?
+			s.id, s.tscore, s.rscore, s.pp, s.plays,
+			s.acc, s.max_combo, s.total_hits, s.replay_views,
+			s.xh_count, s.x_count, s.sh_count, s.s_count, s.a_count
+		FROM stats s
+		JOIN users u ON u.id = s.id
+		WHERE s.id = ? AND s.mode = ? AND u.priv & 1
 	`
 
 	var stats Stats
@@ -102,7 +103,7 @@ func (db *DB) UserInfo(uid int) (Info, error) {
 			creation_time, latest_activity, preferred_mode,
 			play_style, COALESCE(custom_badge_name, ''), COALESCE(custom_badge_icon, ''),
 			COALESCE(userpage_content, '')
-		FROM users WHERE id = ?
+		FROM users WHERE id = ? AND priv & 1
 	`, uid)
 
 	defer cancel()
@@ -165,7 +166,7 @@ func (db *DB) UserSession(email string) (Session, error) {
 func (db *DB) ProfileEdit(uid int) (Userpage, error) {
 	var page Userpage
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	res := db.Database.QueryRowContext(c, "SELECT COALESCE(userpage_content, ''), country, play_style, email FROM users WHERE id = ?", uid)
+	res := db.Database.QueryRowContext(c, "SELECT COALESCE(userpage_content, ''), country, play_style, email FROM users WHERE id = ? AND priv & 1", uid)
 
 	defer cancel()
 
@@ -174,7 +175,7 @@ func (db *DB) ProfileEdit(uid int) (Userpage, error) {
 		&page.Country,
 		&page.Playstyle,
 		&page.Email,
-	); err != nil {
+	); err != nil && err != sql.ErrNoRows {
 		log.Println("Error in ProfileEdit")
 		return page, err
 	}
@@ -190,7 +191,7 @@ func (db *DB) ProfileUpdate(bio, country, email string, playstyle, uid int) erro
 			country = ?,
 			email = ?,
 			play_style = ?
-		WHERE id = ?
+		WHERE id = ? AND priv & 1
 	`, bio, country, email, playstyle, uid)
 
 	defer cancel()
@@ -215,4 +216,19 @@ func (db *DB) LastSeen(uid int) error {
 	}
 
 	return nil
+}
+
+func (db *DB) EmailExists(uid int, email string) bool {
+	var mail bool
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT COUNT(1) FROM users WHERE email = ? AND id != ?", email, uid)
+
+	defer cancel()
+
+	if err := res.Scan(&mail); err != nil {
+		log.Println("Error in EmailExists")
+		return true
+	}
+
+	return mail
 }
