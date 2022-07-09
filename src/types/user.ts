@@ -52,3 +52,9 @@ export interface ProfileSettings {
 
     code?: number;
 }
+
+export interface UserSearch {
+    id: number;
+    username: string;
+    country: string;
+}

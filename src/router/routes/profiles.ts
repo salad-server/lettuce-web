@@ -1,7 +1,6 @@
 import Profile from "@/views/profiles/Profile.vue";
 import Settings from "@/views/profiles/Settings.vue";
 import Picture from "@/views/profiles/Picture.vue";
-import Score from "@/views/profiles/Score.vue";
 
 export default [
     {
@@ -19,11 +18,5 @@ export default [
         name: "Profile Info",
         props: true,
         component: Profile,
-    },
-    {
-        path: "/score/:id",
-        name: "Score Info",
-        props: true,
-        component: Score,
     },
 ];

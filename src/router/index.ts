@@ -9,6 +9,7 @@ import beatmaps from "./routes/beatmaps";
 import index from "./routes/index";
 import info from "./routes/info";
 import profiles from "./routes/profiles";
+import score from "./routes/score";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -21,6 +22,7 @@ const routes: Array<RouteRecordRaw> = [
     ...index,
     ...info,
     ...profiles,
+    ...score,
 
     {
         path: "/:notFound(.*)",

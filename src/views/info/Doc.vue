@@ -19,7 +19,7 @@ import Error from "@/components/global/Error.vue";
 import config from "../../../config.json";
 
 export default defineComponent({
-    props: ["doc"],
+    props: ["id"],
     components: { Loading, Error },
     data() {
         return {
@@ -32,7 +32,7 @@ export default defineComponent({
     },
 
     async mounted() {
-        await fetch(`${config.api}/docs/${this.doc}.md`)
+        await fetch(`${config.api}/docs/${this.id}.md`)
             .then(async (t) => {
                 if (t.status != 200) {
                     throw t.status;

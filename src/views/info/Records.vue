@@ -49,8 +49,8 @@ import { Records } from "@/types/stats";
 import * as alert from "@/util/error";
 
 import Loading from "@/components/global/Loading.vue";
-import config from "../../../config.json";
 import RecordItem from "@/components/info/RecordItem.vue";
+import config from "../../../config.json";
 
 export default defineComponent({
     components: { Loading, RecordItem },
