@@ -205,8 +205,12 @@ b img {
 table {
     background-color: transparent;
     color: #fff;
-    width: 80%;
+    width: 60%;
     margin: auto;
+}
+
+td:nth-child(1) {
+    font-weight: bolder;
 }
 
 .button {
@@ -223,5 +227,15 @@ table {
 .button:active {
     position: relative;
     top: 3px;
+}
+
+@media screen and (max-width: 727px) {
+    table {
+        width: 100%;
+    }
+
+    .buttons {
+        display: none;
+    }
 }
 </style>

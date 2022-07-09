@@ -15,14 +15,13 @@
                 </div>
 
                 <h1 class="is-size-1 my-5">Player Leaderboard</h1>
-
                 <div>
                     <button :class="isSort(0)" @click="sort = 0">PP</button>
                     <button :class="isSort(1)" @click="sort = 1">Score</button>
                 </div>
             </div>
 
-            <Loading v-if="loading" />
+            <LoadingMini v-if="loading" />
             <div v-else>
                 <table v-if="anyplayers" class="table">
                     <tr>
@@ -69,7 +68,7 @@ import * as alert from "@/util/error";
 import router from "@/router";
 
 import Error from "@/components/global/Error.vue";
-import Loading from "@/components/global/Loading.vue";
+import LoadingMini from "@/components/global/LoadingMini.vue";
 import Rank from "@/components/leaderboard/Rank.vue";
 import config from "../../../config.json";
 
@@ -85,7 +84,7 @@ const modes = [
 ];
 
 export default defineComponent({
-    components: { Loading, Error, Rank },
+    components: { LoadingMini, Error, Rank },
     data() {
         return {
             mode: "",

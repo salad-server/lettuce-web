@@ -6,7 +6,7 @@
                 Here you can find documentation about the server!
             </p>
 
-            <Loading v-if="!loaded" />
+            <LoadingMini v-if="!loaded" />
             <ul v-else class="content">
                 <li v-for="doc in docs" :key="doc">
                     <router-link :to="'/info/' + url(doc)">
@@ -23,11 +23,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import * as alert from "@/util/error";
-import Loading from "@/components/global/Loading.vue";
+import LoadingMini from "@/components/global/LoadingMini.vue";
 import config from "../../../config.json";
 
 export default defineComponent({
-    components: { Loading },
+    components: { LoadingMini },
     data() {
         return {
             loaded: false,
