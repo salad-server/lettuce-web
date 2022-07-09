@@ -54,6 +54,12 @@ type Userpage struct {
 	Email     string `json:"email"`
 }
 
+type Search struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Country  string `json:"country"`
+}
+
 func (db *DB) UserStats(uid int, mode string) (Stats, error) {
 	m := scores.Modes[mode]
 	q := `
@@ -259,4 +265,39 @@ func (db *DB) UnpinScore(id int) error {
 	}
 
 	return nil
+}
+
+func (db *DB) SearchUser(s string) ([]Search, error) {
+	var users []Search
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	rows, err := db.Database.QueryContext(c, `
+		SELECT
+			id, name, country
+		FROM users WHERE priv & 1 AND (name LIKE ?)
+		LIMIT 5
+	`, "%"+s+"%")
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in SearchUser")
+		return users, err
+	}
+
+	for rows.Next() {
+		var user Search
+
+		if err := rows.Scan(
+			&user.ID,
+			&user.Username,
+			&user.Country,
+		); err != nil && err != sql.ErrNoRows {
+			log.Println("Error in SearchUser")
+			return users, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }

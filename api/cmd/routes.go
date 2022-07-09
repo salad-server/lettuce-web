@@ -39,6 +39,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("/docs/*", app.Docs())
 
 	// users
+	mux.Get("/users", app.Search)
 	mux.Get("/users/{id}", app.Info)
 	mux.Get("/users/{id}/scores", app.Scores)
 	mux.Get("/users/{id}/stats", app.Stats)

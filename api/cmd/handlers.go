@@ -544,3 +544,23 @@ func (app *application) Unpin(w http.ResponseWriter, r *http.Request) {
 
 	app.success(w)
 }
+
+func (app *application) Search(w http.ResponseWriter, r *http.Request) {
+	query := r.FormValue("s")
+
+	if len(query) > 40 || len(query) < 1 {
+		app.badRequest(w)
+		return
+	}
+
+	users, err := app.DB.SearchUser(query)
+
+	if err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.JSON(w, users)
+}
