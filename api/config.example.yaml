@@ -1,6 +1,10 @@
 DSN: <username>:<password>@tcp(localhost:3306)/<database_name> # MySQL DSN
 PORT: 8081 # API Port. Make sure this matches your nginx!
 
+# Redis config, mini:<key_name>
+REDIS_ADDR: localhost:6379
+REDIS_PW:
+
 # Environment mode (development | production)
 MODE: development
 

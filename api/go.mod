@@ -14,7 +14,11 @@ require golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d
 
 require (
 	github.com/go-chi/httprate v0.5.3
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 )
 
-require github.com/cespare/xxhash/v2 v2.1.2 // indirect
+require (
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+)

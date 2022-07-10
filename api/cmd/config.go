@@ -11,6 +11,8 @@ import (
 type yamlConf struct {
 	Port        int      `yaml:"PORT,omitempty"`
 	DSN         string   `yaml:"DSN,omitempty"`
+	RedisAddr   string   `yaml:"REDIS_ADDR,omitempty"`
+	RedisPass   string   `yaml:"REDIS_PW,omitempty"`
 	Mode        string   `yaml:"MODE,omitempty"`
 	Docs        string   `yaml:"DOCS,omitempty"`
 	Secret      string   `yaml:"SECRET,omitempty"`

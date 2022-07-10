@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"mini-api/internal/scores"
@@ -88,8 +89,6 @@ type Records struct {
 	Score AdvancedScore `json:"score"`
 	PP    AdvancedScore `json:"pp"`
 }
-
-// TODO: Cache record with redis. This query is brutal
 
 func (db *DB) GetScores(best bool, uid, page int, mode string) ([]Score, error) {
 	m := scores.Modes[mode]
@@ -233,6 +232,27 @@ func (db *DB) ScoreInfo(uid int) (ScoreInfoResponse, error) {
 }
 
 func (db *DB) Records() (map[string]Records, error) {
+	cache, err := db.Client.Get(context.Background(), "mini:records").Result()
+	records := map[string]Records{
+		"vn!std":   {},
+		"vn!taiko": {},
+		"vn!catch": {},
+		"vn!mania": {},
+		"rx!std":   {},
+		"rx!taiko": {},
+		"rx!catch": {},
+		"ap!std":   {},
+	}
+
+	// load from cache mini:records
+	if err == nil {
+		if err := json.Unmarshal([]byte(cache), &records); err != nil {
+			log.Println("cache found but could not unmarshal", err)
+		} else {
+			return records, nil
+		}
+	}
+
 	tmpl := `
 		SELECT
 			s.id, s.userid, u.name, s.score, s.pp, s.acc, s.max_combo, s.mods,
@@ -247,17 +267,6 @@ func (db *DB) Records() (map[string]Records, error) {
 		WHERE s.mode = ? AND m.status IN (2, 3, 4) AND s.status = 2 AND u.priv & 1
 		ORDER BY %s DESC LIMIT 1
 	`
-
-	records := map[string]Records{
-		"vn!std":   {},
-		"vn!taiko": {},
-		"vn!catch": {},
-		"vn!mania": {},
-		"rx!std":   {},
-		"rx!taiko": {},
-		"rx!catch": {},
-		"ap!std":   {},
-	}
 
 	for k := range records {
 		var record_pp AdvancedScore
@@ -333,6 +342,12 @@ func (db *DB) Records() (map[string]Records, error) {
 			PP:    record_pp,
 			Score: record_score,
 		}
+	}
+
+	// 4 hours
+	js, jerr := json.Marshal(records)
+	if err := db.Client.Set(context.Background(), "mini:records", string(js), time.Hour*4).Err(); jerr != nil || err != nil {
+		log.Println("Could not set mini:records.", err, jerr)
 	}
 
 	return records, nil

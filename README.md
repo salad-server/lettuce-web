@@ -4,7 +4,7 @@
 
 The frontend of this server. Created using Vue 3. The API can be found in the `/api` directory. Internally, this project is called mini-web. You can read the route information in `ROUTES.md`.
 
-This frontend was designed to work the stack that salad-sever is using. In theory this could work with other stacks by modifying the queries in the API, as the API uses the [standard golang project layout](https://github.com/golang-standards/project-layout).
+This frontend was designed to work the stack that salad-sever is using. In theory this could work with other stacks by modifying the queries in the API, as the API follows the [standard golang project layout](https://github.com/golang-standards/project-layout).
 
 ## Differences
 
@@ -16,6 +16,7 @@ The purpose of this project was to create a small and fast frontend that was cap
 
 -   **Node v16.15.0 and Go 1.18** are required.
 -   **make and git** are also required, but on most systems these are installed by default.
+-   **MySQL and Redis** are required, but should already be installed from bancho.py.
 -   **[upx](https://upx.github.io/)** is optional, but recommended as it will compress the API.
 
 ## Setup

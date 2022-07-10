@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"mini-api/internal/cache"
 	"mini-api/internal/driver"
 	"mini-api/internal/models"
 
@@ -62,16 +63,21 @@ func main() {
 		docs:   c.Docs,
 		secret: c.Secret,
 		cors:   c.Cors,
-		profile: struct{path string; max int64}{
+		profile: struct {
+			path string
+			max  int64
+		}{
 			path: c.ProfilePath,
-			max: c.ProfileMax,
+			max:  c.ProfileMax,
 		},
 	}
 
 	cfg.db.dsn = c.DSN
 	infoLog := log.New(os.Stdout, "Info\t", log.Ldate|log.Ltime)
 	errLog := log.New(os.Stdout, "Error\t", log.Ldate|log.Ltime|log.Lshortfile)
+
 	conn, err := driver.OpenDB(cfg.db.dsn)
+	rdb := cache.NewClient(c.RedisAddr, c.RedisPass)
 
 	if err != nil {
 		errLog.Fatal(err)
@@ -80,9 +86,10 @@ func main() {
 	defer conn.Close()
 
 	app := &application{
-		conf: cfg,
-		info: infoLog,
-		err:  errLog,
+		conf:    cfg,
+		info:    infoLog,
+		err:     errLog,
+		version: version,
 		cors: cors.Options{
 			AllowedOrigins:   cfg.cors,
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -90,9 +97,10 @@ func main() {
 			AllowCredentials: false,
 			MaxAge:           300,
 		},
-		version: version,
+
 		DB: models.DB{
 			Database: conn,
+			Client: rdb,
 		},
 	}
 
