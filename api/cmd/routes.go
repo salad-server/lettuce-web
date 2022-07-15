@@ -31,6 +31,9 @@ func (app *application) routes() http.Handler {
 
 		r.Post("/pfp", app.ProfilePicture)
 		r.Delete("/pfp", app.ProfilePictureRemove)
+
+		r.Post("/fav", app.FavMap)
+		r.Delete("/fav", app.UnfavMap)
 	})
 
 	// docs
@@ -44,6 +47,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/users/{id}/scores", app.Scores)
 	mux.Get("/users/{id}/stats", app.Stats)
 	mux.Get("/users/{id}/pinned", app.Pinned)
+	mux.Get("/users/{id}/favourite", app.Favourites)
 
 	// scores
 	mux.Get("/score", app.Records)

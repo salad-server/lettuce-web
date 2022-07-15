@@ -564,3 +564,115 @@ func (app *application) Search(w http.ResponseWriter, r *http.Request) {
 
 	app.JSON(w, users)
 }
+
+func (app *application) Favourites(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	uid, ierr := strconv.Atoi(id)
+	page, perr := strconv.Atoi(r.FormValue("p"))
+
+	if (ierr != nil || perr != nil) || (uid <= -1 || page <= -1) {
+		app.badRequest(w)
+		return
+	}
+
+	res, err := app.DB.GetFavs(uid, page)
+
+	if err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.JSON(w, res)
+}
+
+func (app *application) FavMap(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	uid, _ := strconv.Atoi(id)
+	sid, err := strconv.Atoi(r.FormValue("m"))
+
+	if err != nil {
+		app.badRequest(w)
+		return
+	}
+
+	// map must exist and unfaved
+	if !app.DB.MapExists(sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		app.JSON(w, simpleResp{
+			Code:    404,
+			Message: "map does not exist!",
+		})
+
+		return
+	}
+
+	if app.DB.FavExists(uid, sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+
+		app.JSON(w, simpleResp{
+			Code:    409,
+			Message: "map is already faved!",
+		})
+
+		return
+	}
+
+	if err := app.DB.FavMap(uid, sid); err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.success(w)
+}
+
+func (app *application) UnfavMap(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	uid, _ := strconv.Atoi(id)
+	sid, err := strconv.Atoi(r.FormValue("m"))
+
+	if err != nil {
+		app.badRequest(w)
+		return
+	}
+
+	// map must exist and faved
+	if !app.DB.MapExists(sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		app.JSON(w, simpleResp{
+			Code:    404,
+			Message: "map does not exist!",
+		})
+
+		return
+	}
+
+	if !app.DB.FavExists(uid, sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+
+		app.JSON(w, simpleResp{
+			Code:    409,
+			Message: "map isn't faved!",
+		})
+
+		return
+	}
+
+	if err := app.DB.UnfavMap(uid, sid); err != nil {
+		app.err.Println(err)
+		app.internalError(w)
+
+		return
+	}
+
+	app.success(w)
+}

@@ -50,6 +50,23 @@ type MapScore struct {
 	} `json:"user"`
 }
 
+type FavBeatmap struct {
+	SetID    int              `json:"set_id"`
+	Artist   string           `json:"artist"`
+	Title    string           `json:"title"`
+	Creator  string           `json:"creator"`
+	Children []FavBeatmapInfo `json:"children"`
+}
+
+type FavBeatmapInfo struct {
+	ID         int     `json:"id"`
+	Status     string  `json:"status"`
+	MD5        string  `json:"md5"`
+	Version    string  `json:"version"`
+	Mode       string  `json:"mode"`
+	Difficulty float32 `json:"diff"`
+}
+
 func (db *DB) BeatmapInfo(sid int) (Beatmap, error) {
 	q := `
 		SELECT
@@ -205,4 +222,137 @@ func (db *DB) BeatmapLeaderboard(bid, page int, mode string) ([]MapScore, error)
 	}
 
 	return bmap_scores, nil
+}
+
+func (db *DB) GetFavs(uid, page int) ([]FavBeatmap, error) {
+	var bmaps []FavBeatmap
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	row, err := db.Database.QueryContext(c, `
+		SELECT DISTINCT
+			m.set_id, m.artist, m.title, m.creator
+		FROM favourites f
+		JOIN maps m ON f.setid = m.set_id
+		WHERE f.userid = ?
+		LIMIT ?, 10
+	`, uid, page*PAGE_LEN)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in FavMap")
+		return nil, err
+	}
+
+	for row.Next() {
+		var bmap FavBeatmap
+		var children []FavBeatmapInfo
+
+		if err := row.Scan(
+			&bmap.SetID,
+			&bmap.Artist,
+			&bmap.Title,
+			&bmap.Creator,
+		); err != nil {
+			log.Println("Error in FavMap")
+			return nil, err
+		}
+
+		cc, cancelChildren := context.WithTimeout(context.Background(), 3*time.Second)
+		childrenRow, err := db.Database.QueryContext(cc, `
+			SELECT
+				id, status, md5, version, mode, diff
+			FROM maps
+			WHERE set_id = ?
+		`, &bmap.SetID)
+
+		defer cancelChildren()
+
+		if err != nil {
+			log.Println("Error in FavMap")
+			return nil, err
+		}
+
+		for childrenRow.Next() {
+			var child FavBeatmapInfo
+
+			if err := childrenRow.Scan(
+				&child.ID,
+				&child.Status,
+				&child.MD5,
+				&child.Version,
+				&child.Mode,
+				&child.Difficulty,
+			); err != nil {
+				log.Println("Error in FavMap")
+				return nil, err
+			}
+
+			child.Status = scores.ConvertStatus(child.Status)
+			child.Mode = scores.ConvertMode(child.Mode)
+			children = append(children, child)
+		}
+
+		bmap.Children = children
+		bmaps = append(bmaps, bmap)
+	}
+
+	return bmaps, nil
+}
+
+func (db *DB) FavExists(uid, sid int) bool {
+	var fav bool
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT 1 FROM favourites WHERE userid = ? AND setid = ?", uid, sid)
+
+	defer cancel()
+
+	if err := res.Scan(&fav); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in FavExists")
+		return true
+	}
+
+	return fav
+}
+
+func (db *DB) MapExists(sid int) bool {
+	var bmap bool
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	res := db.Database.QueryRowContext(c, "SELECT 1 FROM maps WHERE set_id = ?", sid)
+
+	defer cancel()
+
+	if err := res.Scan(&bmap); err != nil && err != sql.ErrNoRows {
+		log.Println("Error in MapExists")
+		return false
+	}
+
+	return bmap
+}
+
+func (db *DB) FavMap(uid, sid int) error {
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := db.Database.ExecContext(c, "INSERT INTO favourites VALUES (?, ?)", uid, sid)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in FavMap")
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) UnfavMap(uid, sid int) error {
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := db.Database.ExecContext(c, "DELETE FROM favourites WHERE userid = ? AND setid = ?", uid, sid)
+
+	defer cancel()
+
+	if err != nil {
+		log.Println("Error in UnfavMap")
+		return err
+	}
+
+	return nil
 }
