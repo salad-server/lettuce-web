@@ -676,3 +676,28 @@ func (app *application) UnfavMap(w http.ResponseWriter, r *http.Request) {
 
 	app.success(w)
 }
+
+func (app *application) IsFaved(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(UserClaims{}).(*UserClaims).Issuer
+	uid, _ := strconv.Atoi(id)
+	sid, err := strconv.Atoi(r.FormValue("m"))
+
+	if err != nil {
+		app.badRequest(w)
+		return
+	}
+
+	if !app.DB.MapExists(sid) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		app.JSON(w, simpleResp{
+			Code:    404,
+			Message: "map does not exist!",
+		})
+
+		return
+	}
+
+	app.JSON(w, app.DB.FavExists(uid, sid))
+}

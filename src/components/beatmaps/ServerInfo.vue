@@ -35,11 +35,22 @@
         >
             Bancho
         </button>
+        <button
+            class="button favourite"
+            v-if="$store.getters.loggedIn"
+            @click="favourite()"
+        >
+            {{ faved ? "Unfavourite" : "Favourite" }}
+        </button>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import Swal from "sweetalert2";
+
+import * as alert from "../../util/error";
+import config from "../../../config.json";
 
 export default defineComponent({
     props: ["map"],
@@ -47,7 +58,29 @@ export default defineComponent({
         return {
             playing: false,
             audio: new Audio(),
+            faved: false,
         };
+    },
+
+    async mounted() {
+        if (!this.$store.getters.loggedIn) return;
+
+        const faved: boolean = await fetch(
+            `${config.api}/@me/fav?m=${this.map.set_id}`,
+            {
+                headers: {
+                    Token: this.$store.state.token,
+                },
+            }
+        )
+            .then((f) => f.json())
+            .catch(() => {
+                alert.API();
+            });
+
+        if (typeof faved == "boolean") {
+            this.faved = faved;
+        }
     },
 
     computed: {
@@ -78,6 +111,40 @@ export default defineComponent({
             }
 
             this.audio.pause();
+        },
+
+        async favourite() {
+            const res = await fetch(
+                `${config.api}/@me/fav?m=${this.map.set_id}`,
+                {
+                    method: this.faved ? "DELETE" : "POST",
+                    headers: {
+                        Token: this.$store.state.token,
+                    },
+                }
+            )
+                .then((j) => j.json())
+                .catch(() => {
+                    alert.API();
+                });
+
+            if (!res) return;
+            if (res?.code != 200) {
+                Swal.fire({
+                    title: "Invalid request!",
+                    text: res.message,
+                    icon: "error",
+                });
+
+                return;
+            }
+
+            Swal.fire({
+                title: "Success!",
+                icon: "success",
+            });
+
+            this.faved = !this.faved;
         },
     },
 
@@ -143,6 +210,10 @@ export default defineComponent({
 
 .play {
     background-color: #9400ff;
+}
+
+.favourite {
+    background-color: #ffa600;
 }
 
 .button:active {

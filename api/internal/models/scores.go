@@ -367,12 +367,12 @@ func (db *DB) GetPinned(uid, page int, mode string) ([]Score, error) {
 		JOIN users u ON s.userid = u.id
 		WHERE s.userid = ? AND s.mode = ? AND u.priv & 1
 		ORDER BY p.pintime DESC
-		LIMIT ?, 10
+		LIMIT ?, 5
 	`
 
 	var pinned []Score
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	row, err := db.Database.QueryContext(c, q, uid, m, page*PAGE_LEN)
+	row, err := db.Database.QueryContext(c, q, uid, m, page*(PAGE_LEN/2))
 
 	defer cancel()
 

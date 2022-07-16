@@ -1,5 +1,5 @@
-import Records from "@/views/info/Records.vue";
-import Score from "@/views/profiles/Score.vue";
+import Records from "@/views/score/Records.vue";
+import Score from "@/views/score/Score.vue";
 
 export default [
     {

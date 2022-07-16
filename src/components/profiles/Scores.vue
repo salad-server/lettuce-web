@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ScoreItem from "./ScoreItem.vue";
+import ScoreItem from "./items/ScoreItem.vue";
 
 export default defineComponent({
     props: ["data", "mode"],

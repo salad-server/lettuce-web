@@ -2,7 +2,7 @@
 
 ![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg) ![last-commit](https://img.shields.io/github/last-commit/salad-server/lettuce-web) ![pr-closed](https://img.shields.io/github/issues-pr-closed/salad-server/lettuce-web)
 
-The frontend of this server. Created using Vue 3. The API can be found in the `/api` directory. Internally, this project is called mini-web. You can read the route information in `ROUTES.md`.
+The frontend for this server. Created using Vue 3. The API can be found in the `/api` directory. Internally, this project is called mini-web. You can read the route information in `ROUTES.md`.
 
 This frontend was designed to work the stack that salad-sever is using. In theory this could work with other stacks by modifying the queries in the API, as the API follows the [standard golang project layout](https://github.com/golang-standards/project-layout).
 

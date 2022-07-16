@@ -58,6 +58,14 @@
                             :mode="mode"
                         />
                     </div>
+
+                    <div v-if="favourite.length">
+                        <div class="divider">Favourite Maps</div>
+                        <Favourite
+                            :data="favourite"
+                            @clicked="loadFavourite()"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,9 +78,11 @@ import router from "@/router";
 import { defineComponent } from "vue";
 import { Score } from "@/types/scores";
 import { Stats as UserStats, Info as UserInfo } from "@/types/user";
+import { Fav } from "@/types/beatmap";
 
 import Loading from "@/components/global/Loading.vue";
 import Error from "@/components/global/Error.vue";
+import Favourite from "@/components/profiles/Favourite.vue";
 import Info from "@/components/profiles/Info.vue";
 import Scores from "@/components/profiles/Scores.vue";
 import Stats from "@/components/profiles/Stats.vue";
@@ -99,7 +109,7 @@ function invalidModes(mode: Mode, mod: Mod) {
 
 export default defineComponent({
     props: ["id"],
-    components: { Loading, Error, Info, Scores, Stats },
+    components: { Loading, Favourite, Error, Info, Scores, Stats },
     data() {
         return {
             mod: "",
@@ -109,12 +119,14 @@ export default defineComponent({
             best: [] as Score[],
             recent: [] as Score[],
             pinned: [] as Score[],
+            favourite: [] as Fav[],
             stats: {} as UserStats,
             info: {} as UserInfo,
             page: {
                 best: 0,
                 recent: 0,
                 pinned: 0,
+                favourite: 0,
             },
 
             disabled: {
@@ -145,6 +157,7 @@ export default defineComponent({
         this.mod = mod || "vn";
 
         await this.loadInfo();
+        await this.loadFavourite();
         this.updateEverything();
         this.loading = false;
     },
@@ -224,6 +237,21 @@ export default defineComponent({
             }
         },
 
+        async loadFavourite() {
+            // prettier-ignore
+            const favs: Fav[] = await fetch(`${config.api}/users/${this.id}/favourite?p=${this.page.favourite++}`).then((j) => j.json()).catch(() => {
+                alert.API();
+            });
+
+            const ids = this.favourite.map((i) => i.set_id);
+
+            for (const fav of favs) {
+                if (!ids.includes(fav.set_id)) {
+                    this.favourite.push(fav);
+                }
+            }
+        },
+
         updateEverything() {
             this.page.best = 0;
             this.page.recent = 0;
@@ -231,6 +259,7 @@ export default defineComponent({
 
             this.best = [];
             this.recent = [];
+            this.pinned = [];
 
             this.loadStats();
             this.loadBest();

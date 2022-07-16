@@ -1,4 +1,4 @@
-// more advanced version of AdvancedBeatmap & Beatmap
+// advanced version of Beatmap
 export interface Beatmap {
     id: number;
     set_id: number;
@@ -22,7 +22,7 @@ export interface Beatmap {
     diff: number;
 }
 
-// Even slimmer version of Score
+// slimmer version of Score
 export interface BeatmapScore {
     id: number;
     score: number;
@@ -42,4 +42,21 @@ export interface User {
     id: string;
     username: string;
     country: string;
+}
+
+export interface Fav {
+    set_id: number;
+    artist: string;
+    title: string;
+    creator: string;
+    children: Child[];
+}
+
+export interface Child {
+    id: number;
+    status: string;
+    md5: string;
+    version: string;
+    mode: string;
+    diff: number;
 }

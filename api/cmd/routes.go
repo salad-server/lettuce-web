@@ -12,7 +12,7 @@ import (
 func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(cors.Handler(app.cors))
-	mux.Use(httprate.LimitByIP(100, 1*time.Minute))
+	mux.Use(httprate.LimitByIP(400, 1*time.Minute))
 
 	mux.Get("/", app.Index)
 	mux.Get("/leaderboard", app.Leaderboard)
@@ -32,6 +32,7 @@ func (app *application) routes() http.Handler {
 		r.Post("/pfp", app.ProfilePicture)
 		r.Delete("/pfp", app.ProfilePictureRemove)
 
+		r.Get("/fav", app.IsFaved)
 		r.Post("/fav", app.FavMap)
 		r.Delete("/fav", app.UnfavMap)
 	})

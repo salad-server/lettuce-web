@@ -233,8 +233,9 @@ func (db *DB) GetFavs(uid, page int) ([]FavBeatmap, error) {
 		FROM favourites f
 		JOIN maps m ON f.setid = m.set_id
 		WHERE f.userid = ?
-		LIMIT ?, 10
-	`, uid, page*PAGE_LEN)
+		ORDER BY m.set_id DESC
+		LIMIT ?, 4
+	`, uid, page*4)
 
 	defer cancel()
 
@@ -263,6 +264,7 @@ func (db *DB) GetFavs(uid, page int) ([]FavBeatmap, error) {
 				id, status, md5, version, mode, diff
 			FROM maps
 			WHERE set_id = ?
+			ORDER BY diff
 		`, &bmap.SetID)
 
 		defer cancelChildren()
