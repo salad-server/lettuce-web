@@ -108,7 +108,7 @@ export default defineComponent({
         },
 
         pfp() {
-            return `${config.avatar}/${this.score.uid}`;
+            return `${config.api}/users/${this.score.uid}/avatar`;
         },
 
         mods() {

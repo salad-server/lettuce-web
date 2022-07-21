@@ -33,7 +33,7 @@ export default defineComponent({
     props: ["info", "id"],
     computed: {
         pfp() {
-            return `${config.avatar}/${this.id}`;
+            return `${config.api}/users/${this.id}/avatar`;
         },
 
         flag() {

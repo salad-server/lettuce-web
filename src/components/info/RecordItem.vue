@@ -54,7 +54,7 @@ export default defineComponent({
 
     computed: {
         pfp() {
-            return `${config.avatar}/${this.score.uid}`;
+            return `${config.api}/users/${this.score.uid}/avatar`;
         },
 
         scoreExists() {

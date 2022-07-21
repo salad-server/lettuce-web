@@ -81,10 +81,7 @@
                     v-if="$store.getters.loggedIn"
                 >
                     <router-link :to="prof" class="navbar-link">
-                        <img
-                            class="avatar"
-                            :src="`${avatar}/${$store.state.id}`"
-                        />
+                        <img class="avatar" :src="ava($store.state.id)" />
 
                         {{ $store.state.username }}
                     </router-link>
@@ -167,7 +164,7 @@ export default defineComponent({
         },
 
         ava(id: number) {
-            return `${config.avatar}/${id}`;
+            return `${config.api}/users/${id}/avatar`;
         },
 
         cc(cc: string) {
@@ -178,10 +175,6 @@ export default defineComponent({
     computed: {
         source(): string {
             return config.source;
-        },
-
-        avatar(): string {
-            return config.avatar;
         },
 
         prof(): string {

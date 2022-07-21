@@ -14,6 +14,9 @@ You can find the routes in `/api/cmd/routes.go`.
         [POST] /profile - Update profile settings
         [POST] /pfp - Set profile picture
         [DELETE] /pfp - Delete profile picture
+        [GET] /fav - Is this beatmap favourited?
+        [POST] /fav - Favourite beatmap
+        [DELETE] /fav - Unfavourite beatmap
 
     /docs
         [GET] / - Documentation listing
@@ -22,9 +25,11 @@ You can find the routes in `/api/cmd/routes.go`.
     /users
         [GET] / - User search
         [GET] /:id - User info
+        [GET] /:id/avatar - Profile picture
         [GET] /:id/scores - User scores
         [GET] /:id/stats - User stats
         [GET] /:id/pinned - User pinned
+        [GET] /:id/favourite - User favourite
 
     /score
         [GET] / - Server records (pp, score, etc...)

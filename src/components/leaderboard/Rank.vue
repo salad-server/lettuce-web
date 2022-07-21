@@ -25,7 +25,7 @@ export default defineComponent({
     props: ["page", "rank", "mode"],
     computed: {
         pfp() {
-            return `${config.avatar}/${this.rank.user.id}`;
+            return `${config.api}/users/${this.rank.user.id}/avatar`;
         },
 
         pflink() {

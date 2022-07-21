@@ -10,6 +10,7 @@ import (
 	"net/mail"
 	"os"
 	"strconv"
+	"strings"
 
 	"mini-api/internal/scores"
 
@@ -700,4 +701,29 @@ func (app *application) IsFaved(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.JSON(w, app.DB.FavExists(uid, sid))
+}
+
+func (app *application) Avatar(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	_, ierr := strconv.Atoi(id)
+	avatars, ferr := ioutil.ReadDir(app.conf.profile.path)
+	ava := "default.jpg"
+
+	if ierr != nil || ferr != nil {
+		app.badRequest(w)
+		return
+	}
+
+	for _, a := range avatars {
+		if strings.HasPrefix(a.Name(), id) {
+			ava = a.Name()
+			break
+		}
+
+	}
+
+	http.ServeFile(
+		w, r,
+		fmt.Sprintf("%s/%s", app.conf.profile.path, ava),
+	)
 }

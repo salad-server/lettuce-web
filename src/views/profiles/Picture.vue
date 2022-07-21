@@ -171,7 +171,7 @@ export default defineComponent({
 
     computed: {
         pfp() {
-            return `${config.avatar}/${this.$store.state.id}`;
+            return `${config.api}/users/${this.$store.state.id}/avatar`;
         },
     },
 });

@@ -45,6 +45,7 @@ func (app *application) routes() http.Handler {
 	// users
 	mux.Get("/users", app.Search)
 	mux.Get("/users/{id}", app.Info)
+	mux.Get("/users/{id}/avatar", app.Avatar)
 	mux.Get("/users/{id}/scores", app.Scores)
 	mux.Get("/users/{id}/stats", app.Stats)
 	mux.Get("/users/{id}/pinned", app.Pinned)
