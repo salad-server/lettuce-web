@@ -78,6 +78,8 @@ $ ./mini-api
 
 You can use any process manager or something like [tmux](https://github.com/tmux/tmux) if you want to keep the API running in the background. The frontend itself doesn't need to be running as the static files are served by nginx.
 
+**OPTIONAL:** If you want in-game redirects to work, you can include `/ext/ingame.conf` in your [bancho.py](https://github.com/osuAkatsuki/bancho.py) nginx config. Also be sure to disable `REDIRECT_OSU_URLS` for [bancho.py's](https://github.com/osuAkatsuki/bancho.py) `.env`.
+
 If you had any issues setting this up you're welcome to open an issue. I'll get to it as soon as I can.
 
 ## Contributing
