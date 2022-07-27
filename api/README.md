@@ -17,8 +17,3 @@ To run without building:
 ```sh
 $ make serve
 ```
-
-To kill:
-```sh
-$ make kill
-```

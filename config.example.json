@@ -2,7 +2,7 @@
     "name": "osu-server-name",
     "landing": "https://picsum.photos/800/600/?random",
     "api": "https://wapi.servername.com",
-    "source": "https://github.com/Cyan903/mini-web",
+    "source": "https://github.com/salad-server/lettuce-web",
     "cho": "https://api.servername.com",
 
     "leaderboard": {
