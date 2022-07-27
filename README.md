@@ -100,3 +100,7 @@ The git commit syntax I've been using is:
 -   : - Small description
 
 Which makes: `[+] feat: Adding something`. The syntax isn't completely required, but it would be nice if followed.
+
+## License
+
+  [MIT](LICENSE)
