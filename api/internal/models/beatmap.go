@@ -51,12 +51,12 @@ type MapScore struct {
 }
 
 type FavBeatmap struct {
-	SetID    int              `json:"set_id"`
-	Artist   string           `json:"artist"`
-	Title    string           `json:"title"`
-	Creator  string           `json:"creator"`
-	CreatedAt    int              `json:"created_at"`
-	Children []FavBeatmapInfo `json:"children"`
+	SetID     int              `json:"set_id"`
+	Artist    string           `json:"artist"`
+	Title     string           `json:"title"`
+	Creator   string           `json:"creator"`
+	CreatedAt int              `json:"created_at"`
+	Children  []FavBeatmapInfo `json:"children"`
 }
 
 type FavBeatmapInfo struct {
