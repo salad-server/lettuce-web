@@ -55,6 +55,7 @@ type FavBeatmap struct {
 	Artist   string           `json:"artist"`
 	Title    string           `json:"title"`
 	Creator  string           `json:"creator"`
+	CreatedAt    int              `json:"created_at"`
 	Children []FavBeatmapInfo `json:"children"`
 }
 
@@ -229,11 +230,11 @@ func (db *DB) GetFavs(uid, page int) ([]FavBeatmap, error) {
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	row, err := db.Database.QueryContext(c, `
 		SELECT DISTINCT
-			m.set_id, m.artist, m.title, m.creator
+			m.set_id, m.artist, m.title, m.creator, f.created_at
 		FROM favourites f
 		JOIN maps m ON f.setid = m.set_id
 		WHERE f.userid = ?
-		ORDER BY m.set_id DESC
+		ORDER BY f.created_at DESC
 		LIMIT ?, 4
 	`, uid, page*4)
 
@@ -253,6 +254,7 @@ func (db *DB) GetFavs(uid, page int) ([]FavBeatmap, error) {
 			&bmap.Artist,
 			&bmap.Title,
 			&bmap.Creator,
+			&bmap.CreatedAt,
 		); err != nil {
 			log.Println("Error in FavMap")
 			return nil, err
@@ -333,7 +335,7 @@ func (db *DB) MapExists(sid int) bool {
 
 func (db *DB) FavMap(uid, sid int) error {
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	_, err := db.Database.ExecContext(c, "INSERT INTO favourites VALUES (?, ?)", uid, sid)
+	_, err := db.Database.ExecContext(c, "INSERT INTO favourites VALUES (?, ?, UNIX_TIMESTAMP())", uid, sid)
 
 	defer cancel()
 
