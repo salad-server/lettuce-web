@@ -66,23 +66,17 @@ export default defineComponent({
 
     computed: {
         mods() {
-            const mode = ["std", "taiko", "catch", "mania"].indexOf(this.mode);
-            const mods = m.convertMods(this.score.mods, mode);
-            const str = m.modstr(mods);
-
-            // prettier-ignore
-            return str.map((s) => `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`).join("");
+            return m
+                .modstr(this.score.mods)
+                .map(
+                    (s) =>
+                        `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`
+                )
+                .join("");
         },
 
         modsTxt() {
-            return m
-                .modstr(
-                    m.convertMods(
-                        this.score.mods,
-                        ["std", "taiko", "catch", "mania"].indexOf(this.mode)
-                    )
-                )
-                .join(", ");
+            return m.modstr(this.score.mods).join(", ");
         },
 
         showStatus() {

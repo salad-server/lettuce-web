@@ -112,13 +112,15 @@ export default defineComponent({
         },
 
         mods() {
-            // prettier-ignore
-            const mode = ["std", "taiko", "catch", "mania"].indexOf(this.score.play_mode.substr(3));
-            const mods = m.convertMods(this.score.mods, mode);
-            const str = m.modstr(mods);
-
-            // prettier-ignore
-            return str.map((s) => `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`).join("") || "None";
+            return (
+                m
+                    .modstr(this.score.mods)
+                    .map(
+                        (s) =>
+                            `<img src="/img/mods/${s.toLowerCase()}.png" alt="${s}" />`
+                    )
+                    .join("") || "None"
+            );
         },
 
         date() {
