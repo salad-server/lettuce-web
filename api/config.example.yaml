@@ -25,4 +25,4 @@ CORS:
 
 # For local testing
 # CORS:
-#   - http://192.168.0.19:8081 (or whatever port the frontend is)
+#   - http://192.168.0.19:8081 (whatever host:port the frontend is running on)
